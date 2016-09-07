@@ -1,102 +1,75 @@
 #include "command.h"
 #include "HandleTable.h"
 
-void add_char_size(char name[])
-{
-	char *temp = new char[name_length + 1];
-	strcpy(temp, name);
-	name = new char[name_length + add_size];
-	name_length += add_size;
-	strcpy(name, temp);
-	delete temp;
-}
-bool deal_delete_data(char command[], int & length, string & table_name, string & where_command)
-{
 
+bool deal_select_data(char command[], int & length, string & table_name, string & where_command,vector<string>&field_name)
+{
 	char *name = new char[name_length];
-	
 	int temp = 0;
-	int flag;
-
-	int effec = false;
+	
 	int counter = 0;
+	int flag = 0;
+	int temp1 = 0;
+	int temp2 = 0;
 	for (int i = 0; i <= length; ++i)
 	{
-		if (temp == name_length - 2)
+		if (name_length - 2 == temp)
 		{
 			add_char_size(name);
 		}
-
 		if (command[i] == ' ' || command[i] == '\0')
 		{
-			if (effec == false)continue;
-			effec = false;
-			if (stricmp(name, "where") == 0)
-			{
-				flag = i;
-				break;
-			}
 			if (counter == 0)
 			{
 				table_name = name;
 			}
-			if (counter > 1)
-				return false;
-			counter++;
-		}
-		else
-		{
-			effec = true;
-
-			name[temp++] = command[i];
-			name[temp] = '\0';
-
+			else
+			{
+				if (stricmp(name, "where") == 0)
+				{
+					temp1 = i;
+					break;
+				}
+				else if (stricmp(name, "order") == 0)
+				{
+					temp2 = i;
+					break;
+				}
+				else
+				{
+					field_name.push_back(name);
+				}
+			}
 			temp = 0;
+
 			delete name;
 			name_length = name_length_bak;
 			name = new char[name_length];
 		}
-	}
-
-	for (int i = flag; i < length; ++i)	//如果开头有空格就跳出
-	{
-		if (command[i] != ' ')
+		else
 		{
-			flag = i;
-			break;
+			name[temp++] = command[i];
+			name[temp] = '\0';
 		}
+
 	}
 
-	temp = 0;
-	for (int i = flag; i < length; ++i)
+
+	if (temp1 == 0)
 	{
-		if (temp == name_length - 2)
-		{
-			add_char_size(name);
-		}
-		name[temp++] = command[i];
+
 	}
-	name[temp] = '\0';
+	else
+	{
 
-	bool is_correct = deal_where(name);
-
-	delete name;
-	return is_correct;
-}
-
-bool deal_select_data(char command[], int & length, string & table_name, string & where_command)
-{
-	
+	}
 	return true;
 }
 
 void deal_with_command(char cmd[], int & length)
 {
 
-	char * tempcmd = new char[length + 1];//备份命令
-	strcpy(tempcmd, cmd);
-	char * command = NULL;
-	command = new char[length + 1];
+	char * command = new char[length + 1];
 	bool check = false;  //如果命令开始时就是空格怎么 办 加一个标记变量
 	int temp = 0;
 
@@ -174,58 +147,38 @@ void deal_with_command(char cmd[], int & length)
 	{
 	case 0:	//创建表的命令数据处理
 	{
-		pair<table*, bool> *my_pair = NULL;
-		my_pair = deal_create_data(command, length);
-
-		table *my_table = my_pair->first;
-
-		char * str = NULL;
-		str = (char*)my_table->name.c_str();
-		fieldType * my_field = NULL;
-		if (my_pair->second == true)
+		string table_name;
+		vector<fieldType> my_field;
+		bool check = deal_create_data(command, length,table_name,my_field);
+		if (check == true)
 		{
-			//有错误啊
-			printf("You have input an error command!\n");
+			createTable(table_name, my_field);
 		}
 		else
 		{
-			//createTable(my_table->name, my_table->field);
+			printf("您刚才输入的命令有错误!\n");
+			printf("请按照下列格式输入插入建表命令\n");
+			printf("CREATE table;\n字段1 数据类型 约束条件\n字段2 数据类型 约束条件\n");
+			printf("eg:CREATE 成绩 数学 int 10 英语 int 00;\n");
+			printf("============================\n");
+			printf("刚才的命令将会是无效命令，如果您想重新执行刚才的操作请重新输入正确的命令:\n");
 		}
-		delete my_pair;
-
-		//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-		//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-		//如何手动删除自己分配的内存
-		while (my_table->field.size() > 0)
-		{
-			my_field = &(*(my_table->field.end() - 1));
-			my_table->field.pop_back();
-
-			//delete my_field;
-		}
-		///需要删除创建的  table里面的内容
-		//delete str;
-
 		break;
 	}
 	case 1:	//drop
 	{
-		char * name = deal_drop_data(command, length);
-		if (name == NULL)
-		{
-			printf("DROP ERROR!Please input only one table name\n");
-		}
+		string table_name;
+		bool check = deal_drop_data(command, length, table_name);
+		if (check ==true)
+			dropTable(table_name);
 		else
 		{
-			if (strcmp(name, "") == 0)
-			{
-				printf("DROP ERROR! Please input a table name!\n");
-			}
-			else
-			{
-				dropTable(name);
-				delete name;
-			}
+			printf("您刚才输入的命令有错误!\n");
+			printf("请按照下列格式输入插入删除命令\n");
+			printf("DROP table;\n");
+			printf("eg:DROP 成绩;\n");
+			printf("============================\n");
+			printf("刚才的命令将会是无效命令，如果您想重新执行刚才的操作请重新输入正确的命令:\n");
 		}
 		break;
 	}
@@ -233,8 +186,19 @@ void deal_with_command(char cmd[], int & length)
 	{
 		string table_name;
 		string where_command;
-		deal_select_data(command, length, table_name, where_command);
-		selectData(table_name, where_command);
+		bool check = deal_select_data(command, length, table_name, where_command);
+		if (check == true)
+			selectData(table_name, where_command);
+		else
+		{
+			printf("您刚才输入的命令有错误!\n");
+			printf("请按照下列格式输入插入记录命令\n");
+			printf("SELECT 	table 字段1 字段2 字段3\
+				   nwhere 条件\nORDER  by 字段 ASC(DESC)\n[ALL, TOP N, *]\n");
+			printf("eg:SELECT 学生 年龄 性别\nwhere 成绩>“90”  top 5\nORDER BY 成绩 ASC; \n");
+			printf("============================\n");
+			printf("刚才的命令将会是无效命令，如果您想重新执行刚才的操作请重新输入正确的命令:\n");
+		}
 		break;
 	}
 	case 3:
@@ -285,9 +249,14 @@ void deal_with_command(char cmd[], int & length)
 	}
 	case 6:
 	{
-		myField*field = NULL;
-		field = deal_add_data(command, length);
-		if (field->my_field.fieldNum == -1)
+		string table_name;
+		fieldType my_field;
+		bool check  = deal_add_data(command, length, table_name, my_field);
+		if (check== true)
+		{
+			addField(table_name, my_field);
+		}
+		else
 		{
 			printf("您刚才输入的命令有错误!\n");
 			printf("请按照以下格式输入命令:\n");
@@ -297,11 +266,6 @@ void deal_with_command(char cmd[], int & length)
 			printf("=============================================");
 			printf("刚才的命令将会是无效命令，如果您想重新执行刚才的操作请重新输入正确的命令:\n");
 		}
-		else
-		{
-			addField(field->name, field->my_field);
-		}
-		delete field;
 		break;
 	}
 	case 7:
@@ -334,7 +298,7 @@ void deal_with_command(char cmd[], int & length)
 	}
 	}
 	delete command;
-	delete tempcmd;
+
 }
 
 
@@ -364,42 +328,33 @@ int check_constraint(string name)	//判断约束条件
 	else return -1;
 }
 
-pair<table*, bool>* deal_create_data(char command[], int & length)//处理创建表的数据
+bool deal_create_data(char command[], int & length, string & table_name, vector<fieldType> field)//处理创建表的数据
 {
-	table * my_table = new table;	//返回表的指针
-
 	bool check = false;//如果含有多个空格
 	bool error = false;//判断输入是否有错
 
 	int count = -2;	//用来区分字段的属性
 	int temp = 0;	//记录name的下标
 
-	char * name = NULL;//暂存所有的输入段
-	name = new char[name_length + 1];	//name 只需要一个即可
+	char * name = new char[name_length + 1];	//暂存所有的输入段name 只需要一个即可
 
-	fieldType * myfield = new fieldType;
+	fieldType  myfield;
 	for (int i = 0; i <= length; ++i)
 	{
 		//判断是否为空格
-		if (command[i] != ' '&&command[i]!='\0') //非空格的话读入	
+		if (command[i] != ' '&&command[i] != '\0') //非空格的话读入	
 		{
 			check = true;
 			if (temp == name_length - 2)
 			{
-				char *temp = new char[name_length + 1];
-				strcpy(temp, name);
-				name = new char[name_length + add_size];
-				name_length += add_size;
-				strcpy(name, temp);
-
-				delete temp;
+				add_char_size(name);
 			}
 
 			name[temp++] = command[i];
 			name[temp] = '\0';
 
 		}
-		else if (command[i] == ' '||command[i]=='\0')//是空格的话进行处理
+		else if (command[i] == ' ' || command[i] == '\0')//是空格的话进行处理
 		{
 			if (check == true)	//处理开始的第一个字符为空格的情况
 			{
@@ -410,14 +365,14 @@ pair<table*, bool>* deal_create_data(char command[], int & length)//处理创建表的
 				{
 					name[temp] = '\0';
 					temp = 0;
-					my_table->name = name;
+					table_name = name;
 				}
 				else
 				{
 					name[temp] = '\0';
 					if (count % 3 == 0)	//字段名
 					{
-						myfield->fieldName = name;
+						myfield.fieldName = name;
 					}
 					else if (count % 3 == 1)//字段类型
 					{
@@ -430,53 +385,46 @@ pair<table*, bool>* deal_create_data(char command[], int & length)//处理创建表的
 						switch (field_type)
 						{
 						case 0:
-							myfield->theType = STRING;
+							myfield.theType = STRING;
 							break;
 						case 1:
-							myfield->theType = INT;
+							myfield.theType = INT;
 							break;
 						case 2:
-							myfield->theType = DOUBLE;
+							myfield.theType = DOUBLE;
 							break;
 						case 3:
-							myfield->theType = DATE;
+							myfield.theType = DATE;
 							break;
 						case -1:
-							error = true;
-							printf("We don't have the data type %s\n", name);
-							break;
+							return false;
 						}
 
 					}
 					else if (count % 3 == 2)//字段约束条件
 					{
 						if (temp > 3)
-							printf("Error! Constriant bits should equal to 2");
+							return false;
 						int judge_type = check_constraint(name);
 						switch (judge_type)
 						{
 						case 10:	// 10
-							error = true;
-							printf("The PK field can't be null");
-							break;
+							return false;
 						case 0:		// 00
-							myfield->judgeBound = 0;
+							myfield.judgeBound = 0;
 							break;
 						case 11:	// 11
-							myfield->judgeBound = 11;
+							myfield.judgeBound = 11;
 							break;
 						case 1:		// 01
-							myfield->judgeBound = 1;
+							myfield.judgeBound = 1;
 							break;
 						case -1:
-							error = true;
-							printf("We don't have %s constriant type\n", name);
-							break;
+							return false;
 						}
 						if (!error)
 						{
-							my_table->field.push_back(*myfield);	//加入一个字段
-							myfield = new fieldType();	//新申请一个字段的内存空间
+							field.push_back(myfield);	//加入一个字段
 						}
 					}
 					temp = 0;	//只要是读到空格之后就要将name下标置为0
@@ -490,39 +438,10 @@ pair<table*, bool>* deal_create_data(char command[], int & length)//处理创建表的
 	}
 	delete name;
 
-	pair<table*, bool> * mypair = new pair < table *, bool >;
-	mypair->first = my_table;
-	mypair->second = error;
-	return mypair;
+	return true;
 }
 
 
-char* deal_drop_data(char cmd[], int & length)
-{
-	char * name = new char[length + 1];
-	bool check = false;
-	bool error = false;
-	int temp = 0;
-	for (int i = 0; i < length; ++i)
-	{
-		if (cmd[i] == ' ')
-		{
-			check = true;
-		}
-		else
-		{
-			if (check == true)
-			{
-				error = true;
-				delete name;
-				return NULL;
-			}
-			name[temp++] = cmd[i];
-		}
-	}
-	name[temp] = '\0';
-	return name;
-}
 
 bool deal_cancel_data(char command[], int &length, string & table_name, vector<string> &field_name)
 {
@@ -537,12 +456,7 @@ bool deal_cancel_data(char command[], int &length, string & table_name, vector<s
 			flag = true;
 			if (temp == name_length - 2)
 			{
-				char *temp = new char[name_length + 1];
-				strcpy(temp, name);
-				name = new char[name_length + add_size];
-				name_length += add_size;
-				strcpy(name, temp);
-				delete temp;
+				add_char_size(name);
 			}
 			name[temp++] = command[i];
 			name[temp] = '\0';
@@ -569,125 +483,6 @@ bool deal_cancel_data(char command[], int &length, string & table_name, vector<s
 	return flag;
 }
 
-myField* deal_add_data(char command[], int &length)
-{
-	int counter = 0;
-	int temp = 0;	//记录name的下标
-	bool error = false;
-	bool check = false;	//处理多个空格
-	char * name = NULL;//暂存所有的输入段
-	name = new char[name_length + 1];	//name 只需要一个即可
-	myField *myfield = new myField;
-	//fieldType * myfield = new fieldType;	
-	myfield->my_field.fieldNum = 0;
-	for (int i = 0; i <= length; ++i)
-	{
-		if (command[i] != ' '&&command[i] != '\0') //非空格的话读入	
-		{
-			check = true;
-			if (temp == name_length - 2)
-			{
-				char *temp = new char[name_length + 1];
-				strcpy(temp, name);
-				name = new char[name_length + add_size];
-				name_length += add_size;
-				strcpy(name, temp);
-				delete temp;
-			}
-			name[temp++] = command[i];
-			name[temp] = '\0';
-		}
-		else
-		{
-			if (counter == 0)
-			{
-				myfield->name = name;
-			}
-			else if (counter == 1)
-			{
-				myfield->my_field.fieldName = name;
-				myfield->my_field.fieldNum++;
-			}
-			else if (counter == 2)
-			{
-				for (int i = 0; name[i] != '\0'; ++i)
-				{
-					if (name[i] >= 'a'&&name[i] <= 'z')//将小写转换为大写
-						name[i] = name[i] - 32;
-				}
-				int field_type = check_data_type(name);
-				switch (field_type)
-				{
-				case 0:
-					myfield->my_field.theType = STRING;
-					break;
-				case 1:
-					myfield->my_field.theType = INT;
-					break;
-				case 2:
-					myfield->my_field.theType = DOUBLE;
-					break;
-				case 3:
-					myfield->my_field.theType = DATE;
-					break;
-				case -1:
-					error = true;
-					printf("We don't have the data type %s\n", name);
-					break;
-				}
-				if (!error)
-					myfield->my_field.fieldNum++;
-
-			}
-			else if (counter == 3)
-			{
-				if (temp > 3)
-					printf("Error! Constriant bits should equal to 2");
-				int judge_type = check_constraint(name);
-				switch (judge_type)
-				{
-				case 10:	// 10
-					error = true;
-					printf("The PK field can't be null");
-					break;
-				case 0:		// 00
-					myfield->my_field.judgeBound = 0;
-					break;
-				case 11:	// 11
-					myfield->my_field.judgeBound = 11;
-					break;
-				case 1:		// 01
-					myfield->my_field.judgeBound = 1;
-					break;
-				case -1:
-					error = true;
-					printf("We don't have %s constriant type\n", name);
-					break;
-				}
-				if (!error)
-					myfield->my_field.fieldNum++;
-
-			}
-			counter++;
-			temp = 0;
-			if (error)
-			{
-				myfield->my_field.fieldNum = -1;
-				break;
-			}
-			delete name;
-			name_length = name_length_bak;
-			name = new char[name_length + 1];
-		}
-	}
-	delete name;
-
-	if (myfield->my_field.fieldNum != 3)
-	{
-		myfield->my_field.fieldNum = -1;
-	}
-	return myfield;
-}
 
 bool deal_insert_data(char command[], int & length, string & table_name, vector<pairData>& my_data)
 {
@@ -707,12 +502,7 @@ bool deal_insert_data(char command[], int & length, string & table_name, vector<
 		{
 			if (temp == name_length - 2)
 			{
-				char *temp = new char[name_length + 1];
-				strcpy(temp, name);
-				name = new char[name_length + add_size];
-				name_length += add_size;
-				strcpy(name, temp);
-				delete temp;
+				add_char_size(name);
 			}
 			name[temp++] = command[i];
 			name[temp] = '\0';
@@ -757,12 +547,7 @@ bool deal_insert_data(char command[], int & length, string & table_name, vector<
 	{
 		if (temp == name_length - 2)
 		{
-			char *temp = new char[name_length + 1];
-			strcpy(temp, name);
-			name = new char[name_length + add_size];
-			name_length += add_size;
-			strcpy(name, temp);
-			delete temp;
+			add_char_size(name);
 		}
 		if (quote == false)	//没有进入左引号
 		{
@@ -872,12 +657,7 @@ bool deal_update_data(char command[], int & length, string & table_name,
 	{
 		if (temp == name_length - 2)
 		{
-			char *temp = new char[name_length + 1];
-			strcpy(temp, name);
-			name = new char[name_length + add_size];
-			name_length += add_size;
-			strcpy(name, temp);
-			delete temp;
+			add_char_size(name);
 		}
 
 		if (quote == false)	//没有进入引号  是字段或者表名
@@ -976,36 +756,263 @@ bool deal_update_data(char command[], int & length, string & table_name,
 
 	if (have_where == false) return true;
 
-	name = new char[length];
-	temp = 0;
-	effec = false;
-	for (int i = flag; i < length; ++i)
+	for (int i = flag; i < length; ++i)	//如果开头有空格就跳出
 	{
-		if (command[i] == ' ')
+		if (command[i] != ' ')
 		{
-			if (effec == true){
-				name[temp++] = command[i];
-				name[temp] = '\0';
-			}
-		}
-		else
-		{
-			effec = true;
-			name[temp++] = command[i];
-			name[temp] = '\0';
+			flag = i;
+			break;
 		}
 	}
 
-	bool is_correct = true;
-	is_correct = deal_where(name);
+	temp = 0;
+	for (int i = flag; i < length; ++i)
+	{
+		if (temp == name_length - 2)
+		{
+			add_char_size(name);
+		}
+		name[temp++] = command[i];
+	}
+	name[temp] = '\0';
+
+	bool is_correct = deal_where(name);
 	where_command = name;
 	delete name;
 
 	return is_correct;
 
 }
+bool deal_drop_data(char command[], int & length, string & table_name)
+{
+	char * name = new char[name_length];
+
+	bool check = false;
+	int counter = 0;
+	int temp = 0;
+	for (int i = 0; i <= length; ++i)
+	{
+		if (name_length - 2 == temp)
+		{
+			add_char_size(name);
+		}
+		if (command[i] == ' ' || command[i] == '\0')
+		{
+			if (check == true)
+				counter++;
+			check = false;
+		}
+		else
+		{
+			if (counter == 1)
+				return false;
+			check = true;
+			name[temp++] = command[i];
+			name[temp] = '\0';
+		}
+	}
+	table_name = name;
+	delete name;
+
+	return true;
+}
+
+bool deal_delete_data(char command[], int & length, string & table_name, string & where_command)
+{
+
+	char *name = new char[name_length];
+	int temp = 0;
+	int flag;
+
+	int effec = false;
+	int counter = 0;
+	for (int i = 0; i <= length; ++i)
+	{
+		if (temp == name_length - 2)
+		{
+			add_char_size(name);
+		}
+
+		if (command[i] == ' ' || command[i] == '\0')
+		{
+			if (effec == false)continue;
+			effec = false;
+			if (stricmp(name, "where") == 0)
+			{
+				flag = i;
+				break;
+			}
+			if (counter == 0)
+			{
+				table_name = name;
+			}
+			if (counter > 1)
+				return false;
+			counter++;
+		}
+		else
+		{
+			effec = true;
+
+			name[temp++] = command[i];
+			name[temp] = '\0';
+
+			temp = 0;
+			delete name;
+			name_length = name_length_bak;
+			name = new char[name_length];
+		}
+	}
+
+	for (int i = flag; i < length; ++i)	//如果开头有空格就跳出
+	{
+		if (command[i] != ' ')
+		{
+			flag = i;
+			break;
+		}
+	}
+
+	temp = 0;
+	for (int i = flag; i < length; ++i)
+	{
+		if (temp == name_length - 2)
+		{
+			add_char_size(name);
+		}
+		name[temp++] = command[i];
+	}
+	name[temp] = '\0';
+
+	bool is_correct = deal_where(name);
+	where_command = name;
+	delete name;
+	return is_correct;
+}
 
 bool deal_where(char where_command[])
 {
 	return true;
+}
+
+bool deal_add_data(char command[], int &length, string &table_name, fieldType & my_field)
+{
+	int counter = 0;
+	int temp = 0;	//记录name的下标
+	bool error = false;
+	bool check = false;	//处理多个空格
+	char * name = new char[name_length];	//暂存所有的输入段 name 只需要一个即可
+
+	fieldType myfield;
+	myfield.fieldNum = 0;
+	for (int i = 0; i <= length; ++i)
+	{
+		if (command[i] != ' '&&command[i] != '\0') //非空格的话读入	
+		{
+			check = true;
+			if (temp == name_length - 2)
+			{
+				add_char_size(name);
+			}
+			name[temp++] = command[i];
+			name[temp] = '\0';
+		}
+		else
+		{
+			if (counter == 0)
+			{
+				table_name = name;
+			}
+			else if (counter == 1)
+			{
+				myfield.fieldName = name;
+				myfield.fieldNum++;
+			}
+			else if (counter == 2)
+			{
+				for (int i = 0; name[i] != '\0'; ++i)
+				{
+					if (name[i] >= 'a'&&name[i] <= 'z')//将小写转换为大写
+						name[i] = name[i] - 32;
+				}
+				int field_type = check_data_type(name);
+				switch (field_type)
+				{
+				case 0:
+					myfield.theType = STRING;
+					break;
+				case 1:
+					myfield.theType = INT;
+					break;
+				case 2:
+					myfield.theType = DOUBLE;
+					break;
+				case 3:
+					myfield.theType = DATE;
+					break;
+				case -1:
+					error = true;
+					printf("We don't have the data type %s\n", name);
+					break;
+				}
+				if (!error)
+					myfield.fieldNum++;
+
+			}
+			else if (counter == 3)
+			{
+				if (temp > 3)
+					printf("Error! Constriant bits should equal to 2");
+				int judge_type = check_constraint(name);
+				switch (judge_type)
+				{
+				case 10:	// 10
+					error = true;
+					printf("The PK field can't be null");
+					break;
+				case 0:		// 00
+					myfield.judgeBound = 0;
+					break;
+				case 11:	// 11
+					myfield.judgeBound = 11;
+					break;
+				case 1:		// 01
+					myfield.judgeBound = 1;
+					break;
+				case -1:
+					error = true;
+					printf("We don't have %s constriant type\n", name);
+					break;
+				}
+				if (!error)
+					myfield.fieldNum++;
+
+			}
+			counter++;
+			temp = 0;
+			if (error)
+			{
+				return false;
+			}
+			delete name;
+			name_length = name_length_bak;
+			name = new char[name_length + 1];
+		}
+	}
+	delete name;
+
+	if (myfield.fieldNum != 3)
+	{
+		return false;
+	}
+	return true;
+}
+void add_char_size(char name[])
+{
+	char *temp = new char[name_length + 1];
+	strcpy(temp, name);
+	name = new char[name_length + add_size];
+	name_length += add_size;
+	strcpy(name, temp);
+	delete temp;
 }

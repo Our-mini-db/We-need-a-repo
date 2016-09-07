@@ -1,14 +1,12 @@
 #ifndef COMMAND_H
 #define COMMAND_H
 
-
 #include <iostream>
 #include <string>
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <vector>
-
 
 using namespace std;
 
@@ -44,13 +42,6 @@ typedef struct{
 
 
 
-//增加一个结构体！！！
-typedef struct
-{
-	fieldType my_field;
-	string name;
-}myField;
-
 const int data_num = 4;
 const int add_size = 30;
 const int command_num = 8;
@@ -73,18 +64,19 @@ bool deal_update_data(char command[], int & length, string & table_name,
 	);
 bool deal_delete_data(char command[], int & length, string & table_name, string & where_command);
 
-bool deal_select_data(char command[], int & length, string & table_name, string & where_command);
+bool deal_select_data(char command[], int & length, string & table_name,
+		string & where_command,vector<string>&field_name);
 
 bool deal_insert_data(char command[], int & length, string & table_name, vector<pairData>& my_data);
 
 bool deal_cancel_data(char command[], int &length, string & table_name, vector<string> & field_name);
 
+bool deal_add_data(char command[], int &length, string &table_name, fieldType & my_field);
 
-char* deal_drop_data(char cmd[], int & length);
+bool deal_drop_data(char command[], int & length,string & table_name);
 
-myField* deal_add_data(char command[], int &length);
-
-pair<table*, bool>* deal_create_data(char command[], int & length);//处理创建表的数据
+//处理创建表的数据
+bool deal_create_data(char command[], int & length, string & table_name, vector<fieldType> field);
 
 
 //cmd参数 吃掉回车的一条命令
@@ -94,6 +86,9 @@ int check_data_type(string name);//判断字段数据类型
 int check_constraint(string name);	//判断约束条件
 
 bool deal_where(char where_command[]);
+
+void add_char_size(char name[]);
+
 
 
 #endif
