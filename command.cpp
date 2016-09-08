@@ -1,7 +1,6 @@
 #include "command.h"
 #include "HandleTable.h"
 
-
 bool deal_select_data(char command[], int & length, string & table_name, string & where_command, string & order_command, vector<string>&field_name)
 {
 	char *name = new char[name_length];
@@ -13,6 +12,7 @@ bool deal_select_data(char command[], int & length, string & table_name, string 
 	int temp2 = 0;	//记录order 语句
 
 	bool space = false;
+
 	for (int i = 0; i <= length; ++i)
 	{
 		if (name_length - 2 == temp)
@@ -27,17 +27,21 @@ bool deal_select_data(char command[], int & length, string & table_name, string 
 			if (counter == 0)
 			{
 				table_name = name;
-				counter = 1;
+				counter ++;
 			}
 			else
 			{
 				if (stricmp(name, "where") == 0)
 				{
+					if (counter == 1)
+						return false;
 					temp1 = i;
 					break;
 				}
-				else if (stricmp(name, "order") == 0)
+				else if (stricmp(name, "order") == 0||stricmp(name,"top")==0)
 				{
+					if (counter == 1)
+						return false;
 					temp2 = i;
 					break;
 				}
@@ -63,8 +67,10 @@ bool deal_select_data(char command[], int & length, string & table_name, string 
 	temp = 0;
 	if (temp1 == 0)	
 	{
+		where_command = "";
 		if (temp2 == 0)
 		{
+			order_command = "";
 			return true;
 		}
 		else
@@ -93,15 +99,90 @@ bool deal_select_data(char command[], int & length, string & table_name, string 
 			else
 			{
 				order_command = name;
-				delete name;
 				return true;
 			}
 		}
 	}
-	else if (temp1 != 0)
+	else if (temp1 != 0)//肯定有where字段
 	{
+		counter = 0;
+		space = false;
 		
+		bool quote = false; //判断是否进入双引号
+		for (int i = temp1; i <= length; ++i)
+		{
+			if (command[i] != ' ')
+			{
+				temp1 = i;
+				break;
+			}
+		}
+		for (int i = temp1; i <= length; ++i)
+		{
+			if (name_length == temp - 2)
+			{
+				add_char_size(name);
+			}
+
+			if (command[i] == ' ' || command[i] == '\0')
+			{
+				if (space == false)continue;
+				space = false;
+				if (stricmp(name, "order") == 0|| stricmp(name, "top") == 0)
+				{
+					if (counter == 1)
+						return false;
+					bool check = deal_where(name);
+					if (check == false)
+						return false;
+					else
+						where_command = name;
+	
+					temp2 = i;
+					break;
+				}
+			}
+			else
+			{
+				space = true;
+				name[temp++] = command[i];
+				name[temp] = '\0';
+			}
+		}
+
+		if (temp2 == 0)	//没有order语句
+		{
+			order_command = "";
+			return true;
+		}
+		else            //有order语句或者top语句
+		{
+
+			temp2 = 0;
+			for (int i = temp2; i <= length; ++i)
+			{
+				if (command[i] != ' ')
+				{
+					temp2 = i;
+					break;
+				}
+			}
+			temp = 0;
+			for (int i = temp2; i <= length; ++i)
+			{
+				if (name_length == temp - 2)
+					add_char_size(name);
+				name[temp++] = command[i];
+				name[temp] = '\0';
+			}
+			bool check = deal_order(name);
+			if (check == true)
+				order_command = name;
+			else return false;
+			
+		}
 	}
+	delete name;
 	return true;
 }
 
@@ -225,9 +306,11 @@ void deal_with_command(char cmd[], int & length)
 	{
 		string table_name;
 		string where_command;
-		bool check = deal_select_data(command, length, table_name, where_command);
+		vector<string> field_name;
+		string order_command;
+		bool check = deal_select_data(command, length, table_name, where_command,order_command,field_name);
 		if (check == true)
-			selectData(table_name, where_command);
+			selectData(table_name, where_command,order_command,field_name);
 		else
 		{
 			printf("您刚才输入的命令有错误!\n");
@@ -281,9 +364,19 @@ void deal_with_command(char cmd[], int & length)
 	case 5:
 	{
 		string table_name;
-		string where_command;
-		deal_delete_data(command, length, table_name, where_command);
-		deleteData(table_name, where_command);
+		string where_command; 
+		bool check = deal_delete_data(command, length, table_name, where_command);
+		if (check == true)
+			deleteData(table_name, where_command);
+		else
+		{
+			printf("您刚才输入的命令有错误!\n");
+			printf("请按照下列格式输入delete字段命令\n");
+			printf(";\n");
+			printf("eg:;\n");
+			printf("============================\n");
+			printf("刚才的命令将会是无效命令，如果您想重新执行刚才的操作请重新输入正确的命令:\n");
+		}
 		break;
 	}
 	case 6:
@@ -929,11 +1022,6 @@ bool deal_delete_data(char command[], int & length, string & table_name, string 
 	return is_correct;
 }
 
-bool deal_where(char where_command[])
-{
-	return true;
-}
-
 bool deal_add_data(char command[], int &length, string &table_name, fieldType & my_field)
 {
 	int counter = 0;
@@ -1054,4 +1142,14 @@ void add_char_size(char name[])
 	name_length += add_size;
 	strcpy(name, temp);
 	delete temp;
+}
+
+bool deal_order(char order_command[])
+{
+	return true;
+}
+
+bool deal_where(char where_command[])
+{
+	return true;
 }

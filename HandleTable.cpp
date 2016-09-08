@@ -38,7 +38,7 @@ void updateData(string tableName, vector<pairData> updata_data, string where_com
 }
 
 
-void selectData(string tableNmae,string & where_command, string & order_command, vector<string>&field_name)
+void selectData(string tableNmae,string  where_command, string  order_command, vector<string> field_name)
 {
 
 }

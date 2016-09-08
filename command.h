@@ -65,13 +65,13 @@ bool deal_update_data(char command[], int & length, string & table_name,
 bool deal_delete_data(char command[], int & length, string & table_name, string & where_command);
 
 bool deal_select_data(char command[], int & length, string & table_name,
-		string & where_command,string & order_command,vector<string>&field_name);
+	string & where_command, string & order_command, vector<string> & field_name);
 
 bool deal_insert_data(char command[], int & length, string & table_name, vector<pairData>& my_data);
 
 bool deal_cancel_data(char command[], int &length, string & table_name, vector<string> & field_name);
 
-bool deal_add_data(char command[], int &length, string &table_name, fieldType & my_field);
+bool deal_add_data(char command[], int &length, string & table_name, fieldType & my_field);
 
 bool deal_drop_data(char command[], int & length,string & table_name);
 
