@@ -2,15 +2,17 @@
 #include "HandleTable.h"
 
 
-bool deal_select_data(char command[], int & length, string & table_name, string & where_command,vector<string>&field_name)
+bool deal_select_data(char command[], int & length, string & table_name, string & where_command, string & order_command, vector<string>&field_name)
 {
 	char *name = new char[name_length];
 	int temp = 0;
 	
 	int counter = 0;
 	int flag = 0;
-	int temp1 = 0;
-	int temp2 = 0;
+	int temp1 = 0;	//¼ÇÂ¼whereÓï¾ä
+	int temp2 = 0;	//¼ÇÂ¼order Óï¾ä
+
+	bool space = false;
 	for (int i = 0; i <= length; ++i)
 	{
 		if (name_length - 2 == temp)
@@ -19,9 +21,13 @@ bool deal_select_data(char command[], int & length, string & table_name, string 
 		}
 		if (command[i] == ' ' || command[i] == '\0')
 		{
+			if (space == false)
+				continue;
+			space = false;
 			if (counter == 0)
 			{
 				table_name = name;
+				counter = 1;
 			}
 			else
 			{
@@ -43,25 +49,58 @@ bool deal_select_data(char command[], int & length, string & table_name, string 
 			temp = 0;
 
 			delete name;
+			if (command[i] == '\0')return true;
 			name_length = name_length_bak;
 			name = new char[name_length];
 		}
 		else
 		{
+			space = true;
 			name[temp++] = command[i];
 			name[temp] = '\0';
 		}
-
 	}
-
-
-	if (temp1 == 0)
+	temp = 0;
+	if (temp1 == 0)	
 	{
+		if (temp2 == 0)
+		{
+			return true;
+		}
+		else
+		{
+			for (int i = temp2; i < length;i++)
+			{
+				if (command[i] != ' ')
+				{
+					temp2 = i;
+					break;
+				}
+			}
 
+			for (int i = temp2; i < length; ++i)
+			{
+				if (name_length == temp - 2)
+				{
+					add_char_size(name);
+				}
+				name[temp++] = command[i];
+				name[temp] = '\0';
+			}
+			bool is_correct = deal_order(name);
+			if (is_correct == false)
+				return false;
+			else
+			{
+				order_command = name;
+				delete name;
+				return true;
+			}
+		}
 	}
-	else
+	else if (temp1 != 0)
 	{
-
+		
 	}
 	return true;
 }

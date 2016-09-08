@@ -65,7 +65,7 @@ bool deal_update_data(char command[], int & length, string & table_name,
 bool deal_delete_data(char command[], int & length, string & table_name, string & where_command);
 
 bool deal_select_data(char command[], int & length, string & table_name,
-		string & where_command,vector<string>&field_name);
+		string & where_command,string & order_command,vector<string>&field_name);
 
 bool deal_insert_data(char command[], int & length, string & table_name, vector<pairData>& my_data);
 
@@ -86,6 +86,7 @@ int check_data_type(string name);//判断字段数据类型
 int check_constraint(string name);	//判断约束条件
 
 bool deal_where(char where_command[]);
+bool deal_order(char order_command[]);
 
 void add_char_size(char name[]);
 
