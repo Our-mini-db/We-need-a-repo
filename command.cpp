@@ -1,200 +1,43 @@
-#include "command.h"
-#include "HandleTable.h"
+ï»¿
+#define _CRT_SERURE_NO_WARNINGS
+#include "Command.h"
 
-bool deal_select_data(char command[], int & length, string & table_name, string & where_command, string & order_command, vector<string>&field_name)
+char* add_char_size(char name[])
 {
-	char *name = new char[name_length];
-	int temp = 0;
-	
-	int counter = 0;
-	int flag = 0;
-	int temp1 = 0;	//¼ÇÂ¼whereÓï¾ä
-	int temp2 = 0;	//¼ÇÂ¼order Óï¾ä
-
-	bool space = false;
-
-	for (int i = 0; i <= length; ++i)
+	char *temp = new char[name_length + 1];
+	for (int i = 0; i < name_length + 1; i++)
 	{
-		if (name_length - 2 == temp)
-		{
-			add_char_size(name);
-		}
-		if (command[i] == ' ' || command[i] == '\0')
-		{
-			if (space == false)
-				continue;
-			space = false;
-			if (counter == 0)
-			{
-				table_name = name;
-				counter ++;
-			}
-			else
-			{
-				if (stricmp(name, "where") == 0)
-				{
-					if (counter == 1)
-						return false;
-					temp1 = i;
-					break;
-				}
-				else if (stricmp(name, "order") == 0||stricmp(name,"top")==0)
-				{
-					if (counter == 1)
-						return false;
-					temp2 = i;
-					break;
-				}
-				else
-				{
-					field_name.push_back(name);
-				}
-			}
-			temp = 0;
+		temp[i] = name[i];
+		if (name[i] == '\0')break;
 
-			delete name;
-			if (command[i] == '\0')return true;
-			name_length = name_length_bak;
-			name = new char[name_length];
-		}
-		else
-		{
-			space = true;
-			name[temp++] = command[i];
-			name[temp] = '\0';
-		}
 	}
-	temp = 0;
-	if (temp1 == 0)	
-	{
-		where_command = "";
-		if (temp2 == 0)
-		{
-			order_command = "";
-			return true;
-		}
-		else
-		{
-			for (int i = temp2; i < length;i++)
-			{
-				if (command[i] != ' ')
-				{
-					temp2 = i;
-					break;
-				}
-			}
-
-			for (int i = temp2; i < length; ++i)
-			{
-				if (name_length == temp - 2)
-				{
-					add_char_size(name);
-				}
-				name[temp++] = command[i];
-				name[temp] = '\0';
-			}
-			bool is_correct = deal_order(name);
-			if (is_correct == false)
-				return false;
-			else
-			{
-				order_command = name;
-				return true;
-			}
-		}
-	}
-	else if (temp1 != 0)//¿Ï¶¨ÓĞwhere×Ö¶Î
-	{
-		counter = 0;
-		space = false;
-		
-		bool quote = false; //ÅĞ¶ÏÊÇ·ñ½øÈëË«ÒıºÅ
-		for (int i = temp1; i <= length; ++i)
-		{
-			if (command[i] != ' ')
-			{
-				temp1 = i;
-				break;
-			}
-		}
-		for (int i = temp1; i <= length; ++i)
-		{
-			if (name_length == temp - 2)
-			{
-				add_char_size(name);
-			}
-
-			if (command[i] == ' ' || command[i] == '\0')
-			{
-				if (space == false)continue;
-				space = false;
-				if (stricmp(name, "order") == 0|| stricmp(name, "top") == 0)
-				{
-					if (counter == 1)
-						return false;
-					bool check = deal_where(name);
-					if (check == false)
-						return false;
-					else
-						where_command = name;
-	
-					temp2 = i;
-					break;
-				}
-			}
-			else
-			{
-				space = true;
-				name[temp++] = command[i];
-				name[temp] = '\0';
-			}
-		}
-
-		if (temp2 == 0)	//Ã»ÓĞorderÓï¾ä
-		{
-			order_command = "";
-			return true;
-		}
-		else            //ÓĞorderÓï¾ä»òÕßtopÓï¾ä
-		{
-
-			temp2 = 0;
-			for (int i = temp2; i <= length; ++i)
-			{
-				if (command[i] != ' ')
-				{
-					temp2 = i;
-					break;
-				}
-			}
-			temp = 0;
-			for (int i = temp2; i <= length; ++i)
-			{
-				if (name_length == temp - 2)
-					add_char_size(name);
-				name[temp++] = command[i];
-				name[temp] = '\0';
-			}
-			bool check = deal_order(name);
-			if (check == true)
-				order_command = name;
-			else return false;
-			
-		}
-	}
+	//strcpy(temp, name);
 	delete name;
+	name = new char[name_length + add_size];
+	name_length = name_length + add_size;
+	for (int i = 0; i < name_length + 1; i++)
+	{
+		name[i] = temp[i];
+		if (temp[i] == '\0')break;
+	}
+	//strcpy(name, temp);
+	delete temp;
+	return name;
+}
+
+bool deal_order(char order_command[])
+{
 	return true;
 }
 
 void deal_with_command(char cmd[], int & length)
 {
-
 	char * command = new char[length + 1];
-	bool check = false;  //Èç¹ûÃüÁî¿ªÊ¼Ê±¾ÍÊÇ¿Õ¸ñÔõÃ´ °ì ¼ÓÒ»¸ö±ê¼Ç±äÁ¿
+	bool check = false;  //ÃˆÃ§Â¹Ã»ÃƒÃ¼ÃÃ®Â¿ÂªÃŠÂ¼ÃŠÂ±Â¾ÃÃŠÃ‡Â¿Ã•Â¸Ã±Ã”ÃµÃƒÂ´ Â°Ã¬ Â¼Ã“Ã’Â»Â¸Ã¶Â±ÃªÂ¼Ã‡Â±Ã¤ÃÂ¿
 	int temp = 0;
 
-	int k = 0;	//¼ÇÂ¼µÚ¼¸¸öÎª·ÇÃüÁî×Ö¶Î
-	for (int i = 0; i < length; ++i)	//¶ÁÈëÃ¿ÌõÃüÁîµÄµÚÒ»¸ö×Ö¶Î
+	int k = 0;	//Â¼Ã‡Ã‚Â¼ÂµÃšÂ¼Â¸Â¸Ã¶ÃÂªÂ·Ã‡ÃƒÃ¼ÃÃ®Ã—Ã–Â¶Ã
+	for (int i = 0; i < length; ++i)	//Â¶ÃÃˆÃ«ÃƒÂ¿ÃŒÃµÃƒÃ¼ÃÃ®ÂµÃ„ÂµÃšÃ’Â»Â¸Ã¶Ã—Ã–Â¶Ã
 	{
 		if (temp > 6)break;
 		if (cmd[i] != ' ')
@@ -218,13 +61,13 @@ void deal_with_command(char cmd[], int & length)
 		command[6] = '\0';
 		return;
 	}
-	for (int i = 0; command[i] != '\0'; ++i)	//½«Ğ¡Ğ´×ÖÄ¸×ª»¯Îª´óĞ´×ÖÄ¸
+	for (int i = 0; command[i] != '\0'; ++i)	//Â½Â«ÃÂ¡ÃÂ´Ã—Ã–Ã„Â¸Ã—ÂªÂ»Â¯ÃÂªÂ´Ã³ÃÂ´Ã—Ã–Ã„Â¸
 	{
 		if (command[i] <= 'z'&&command[i] >= 'a')
 			command[i] = command[i] - 32;
 	}
 	int command_kind = -1;
-	for (int i = 0; i < command_num; ++i)	//ÅĞ¶ÏÖ¸ÁîÊÇ·ñÔÚÖ¸Áî¼¯ÖĞÒÑ±»¶¨Òå
+	for (int i = 0; i < command_num; ++i)	//Ã…ÃÂ¶ÃÃ–Â¸ÃÃ®ÃŠÃ‡Â·Ã±Ã”ÃšÃ–Â¸ÃÃ®Â¼Â¯Ã–ÃÃ’Ã‘Â±Â»Â¶Â¨Ã’Ã¥
 	{
 		if (strcmp(command_content[i], command) == 0)
 		{
@@ -232,15 +75,15 @@ void deal_with_command(char cmd[], int & length)
 			break;
 		}
 	}
-	if (command_kind == -1)	//Èç¹ûÎªÎ´¶¨ÒåµÄÖ¸Áî×Ö¶Î£¬½áÊøµ±Ç°Ö¸ÁîµÄ´¦Àí
+	if (command_kind == -1)	//ÃˆÃ§Â¹Ã»ÃÂªÃÂ´Â¶Â¨Ã’Ã¥ÂµÃ„Ã–Â¸ÃÃ®Ã—Ã–Â¶ÃÂ£Â¬Â½Ã¡ÃŠÃ¸ÂµÂ±Ã‡Â°Ã–Â¸ÃÃ®ÂµÃ„Â´Â¦Ã€Ã­
 	{
 		printf("We don't have %s command\n", command);
 		return;
 	}
-	cout << command << endl;
-	//½«Ê£ÏÂµÄÃüÁî×Ö¶ÎÏòÇ°Å²µ½×Ö·û´®Ê×£¬Ò²¼´ÏÖÔÚµÄcommand×Ö·û´®´æµÄÃüÁî²»°üº¬CREATE£¬UPDATEµÈ×Ö¶Î£»
-	//²¢ÇÒÃüÁî¿ªÍ·²»º¬¿Õ¸ñ 
-	check = false;	
+	//cout << command << endl;
+	//Â½Â«ÃŠÂ£ÃÃ‚ÂµÃ„ÃƒÃ¼ÃÃ®Ã—Ã–Â¶ÃÃÃ²Ã‡Â°Ã…Â²ÂµÂ½Ã—Ã–Â·Ã»Â´Â®ÃŠÃ—Â£Â¬Ã’Â²Â¼Â´ÃÃ–Ã”ÃšÂµÃ„commandÃ—Ã–Â·Ã»Â´Â®Â´Ã¦ÂµÃ„ÃƒÃ¼ÃÃ®Â²Â»Â°Ã¼ÂºÂ¬CREATEÂ£Â¬UPDATEÂµÃˆÃ—Ã–Â¶ÃÂ£Â»
+	//Â²Â¢Ã‡Ã’ÃƒÃ¼ÃÃ®Â¿ÂªÃÂ·Â²Â»ÂºÂ¬Â¿Ã•Â¸Ã± 
+	check = false;
 	temp = 0;
 
 	for (int i = k; i < length; ++i)
@@ -259,29 +102,30 @@ void deal_with_command(char cmd[], int & length)
 		}
 	}
 	command[temp] = '\0';
-	cout << command << endl;
+	//cout << command << endl;
 
 	length = temp;
 
-	switch (command_kind)	//°ËÌõÃüÁîÒÔ¼°´íÎó´¦Àí
+	switch (command_kind)	//Â°Ã‹ÃŒÃµÃƒÃ¼ÃÃ®Ã’Ã”Â¼Â°Â´Ã­ÃÃ³Â´Â¦Ã€Ã­
 	{
-	case 0:	//´´½¨±íµÄÃüÁîÊı¾İ´¦Àí
+	case 0:	//Â´Â´Â½Â¨Â±Ã­ÂµÃ„ÃƒÃ¼ÃÃ®ÃŠÃ½Â¾ÃÂ´Â¦Ã€Ã­
 	{
 		string table_name;
 		vector<fieldType> my_field;
-		bool check = deal_create_data(command, length,table_name,my_field);
+		bool check = deal_create_data(command, length, table_name, my_field);
 		if (check == true)
 		{
 			createTable(table_name, my_field);
+			cout << "åˆ›å»ºæˆåŠŸ" << endl;
 		}
 		else
 		{
-			printf("Äú¸Õ²ÅÊäÈëµÄÃüÁîÓĞ´íÎó!\n");
-			printf("Çë°´ÕÕÏÂÁĞ¸ñÊ½ÊäÈë²åÈë½¨±íÃüÁî\n");
-			printf("CREATE table;\n×Ö¶Î1 Êı¾İÀàĞÍ Ô¼ÊøÌõ¼ş\n×Ö¶Î2 Êı¾İÀàĞÍ Ô¼ÊøÌõ¼ş\n");
-			printf("eg:CREATE ³É¼¨ ÊıÑ§ int 10 Ó¢Óï int 00;\n");
+			printf("Ã„ÃºÂ¸Ã•Â²Ã…ÃŠÃ¤ÃˆÃ«ÂµÃ„ÃƒÃ¼ÃÃ®Ã“ÃÂ´Ã­ÃÃ³!\n");
+			printf("Ã‡Ã«Â°Â´Ã•Ã•ÃÃ‚ÃÃÂ¸Ã±ÃŠÂ½ÃŠÃ¤ÃˆÃ«Â²Ã¥ÃˆÃ«Â½Â¨Â±Ã­ÃƒÃ¼ÃÃ®\n");
+			printf("CREATE table;\nÃ—Ã–Â¶Ã1 ÃŠÃ½Â¾ÃÃ€Ã ÃÃ Ã”Â¼ÃŠÃ¸ÃŒÃµÂ¼Ã¾\nÃ—Ã–Â¶Ã2 ÃŠÃ½Â¾ÃÃ€Ã ÃÃ Ã”Â¼ÃŠÃ¸ÃŒÃµÂ¼Ã¾\n");
+			printf("eg:CREATE Â³Ã‰Â¼Â¨ ÃŠÃ½Ã‘Â§ int 10 Ã“Â¢Ã“Ã¯ int 00;\n");
 			printf("============================\n");
-			printf("¸Õ²ÅµÄÃüÁî½«»áÊÇÎŞĞ§ÃüÁî£¬Èç¹ûÄúÏëÖØĞÂÖ´ĞĞ¸Õ²ÅµÄ²Ù×÷ÇëÖØĞÂÊäÈëÕıÈ·µÄÃüÁî:\n");
+			printf("Â¸Ã•Â²Ã…ÂµÃ„ÃƒÃ¼ÃÃ®Â½Â«Â»Ã¡ÃŠÃ‡ÃÃÃÂ§ÃƒÃ¼ÃÃ®Â£Â¬ÃˆÃ§Â¹Ã»Ã„ÃºÃÃ«Ã–Ã˜ÃÃ‚Ã–Â´ÃÃÂ¸Ã•Â²Ã…ÂµÃ„Â²Ã™Ã—Ã·Ã‡Ã«Ã–Ã˜ÃÃ‚ÃŠÃ¤ÃˆÃ«Ã•Ã½ÃˆÂ·ÂµÃ„ÃƒÃ¼ÃÃ®:\n");
 		}
 		break;
 	}
@@ -289,16 +133,19 @@ void deal_with_command(char cmd[], int & length)
 	{
 		string table_name;
 		bool check = deal_drop_data(command, length, table_name);
-		if (check ==true)
+		if (check == true)
+		{
 			dropTable(table_name);
+			cout << "åˆ è¡¨æˆåŠŸ" << endl;
+		}
 		else
 		{
-			printf("Äú¸Õ²ÅÊäÈëµÄÃüÁîÓĞ´íÎó!\n");
-			printf("Çë°´ÕÕÏÂÁĞ¸ñÊ½ÊäÈë²åÈëÉ¾³ıÃüÁî\n");
+			printf("Ã„ÃºÂ¸Ã•Â²Ã…ÃŠÃ¤ÃˆÃ«ÂµÃ„ÃƒÃ¼ÃÃ®Ã“ÃÂ´Ã­ÃÃ³!\n");
+			printf("Ã‡Ã«Â°Â´Ã•Ã•ÃÃ‚ÃÃÂ¸Ã±ÃŠÂ½ÃŠÃ¤ÃˆÃ«Â²Ã¥ÃˆÃ«Ã‰Â¾Â³Ã½ÃƒÃ¼ÃÃ®\n");
 			printf("DROP table;\n");
-			printf("eg:DROP ³É¼¨;\n");
+			printf("eg:DROP Â³Ã‰Â¼Â¨;\n");
 			printf("============================\n");
-			printf("¸Õ²ÅµÄÃüÁî½«»áÊÇÎŞĞ§ÃüÁî£¬Èç¹ûÄúÏëÖØĞÂÖ´ĞĞ¸Õ²ÅµÄ²Ù×÷ÇëÖØĞÂÊäÈëÕıÈ·µÄÃüÁî:\n");
+			printf("Â¸Ã•Â²Ã…ÂµÃ„ÃƒÃ¼ÃÃ®Â½Â«Â»Ã¡ÃŠÃ‡ÃÃÃÂ§ÃƒÃ¼ÃÃ®Â£Â¬ÃˆÃ§Â¹Ã»Ã„ÃºÃÃ«Ã–Ã˜ÃÃ‚Ã–Â´ÃÃÂ¸Ã•Â²Ã…ÂµÃ„Â²Ã™Ã—Ã·Ã‡Ã«Ã–Ã˜ÃÃ‚ÃŠÃ¤ÃˆÃ«Ã•Ã½ÃˆÂ·ÂµÃ„ÃƒÃ¼ÃÃ®:\n");
 		}
 		break;
 	}
@@ -308,18 +155,20 @@ void deal_with_command(char cmd[], int & length)
 		string where_command;
 		vector<string> field_name;
 		string order_command;
-		bool check = deal_select_data(command, length, table_name, where_command,order_command,field_name);
+		bool check = deal_select_data(command, length, table_name, where_command, order_command, field_name);
 		if (check == true)
-			selectData(table_name, where_command,order_command,field_name);
+		{
+			selectData(table_name, where_command, order_command, field_name);
+		}
 		else
 		{
-			printf("Äú¸Õ²ÅÊäÈëµÄÃüÁîÓĞ´íÎó!\n");
-			printf("Çë°´ÕÕÏÂÁĞ¸ñÊ½ÊäÈë²åÈë¼ÇÂ¼ÃüÁî\n");
-			printf("SELECT 	table ×Ö¶Î1 ×Ö¶Î2 ×Ö¶Î3\
-				   nwhere Ìõ¼ş\nORDER  by ×Ö¶Î ASC(DESC)\n[ALL, TOP N, *]\n");
-			printf("eg:SELECT Ñ§Éú ÄêÁä ĞÔ±ğ\nwhere ³É¼¨>¡°90¡±  top 5\nORDER BY ³É¼¨ ASC; \n");
+			printf("Ã„ÃºÂ¸Ã•Â²Ã…ÃŠÃ¤ÃˆÃ«ÂµÃ„ÃƒÃ¼ÃÃ®Ã“ÃÂ´Ã­ÃÃ³!\n");
+			printf("Ã‡Ã«Â°Â´Ã•Ã•ÃÃ‚ÃÃÂ¸Ã±ÃŠÂ½ÃŠÃ¤ÃˆÃ«Â²Ã¥ÃˆÃ«Â¼Ã‡Ã‚Â¼ÃƒÃ¼ÃÃ®\n");
+			printf("SELECT 	table Ã—Ã–Â¶Ã1 Ã—Ã–Â¶Ã2 Ã—Ã–Â¶Ã3\
+				   				   nwhere ÃŒÃµÂ¼Ã¾\nORDER  by Ã—Ã–Â¶Ã ASC(DESC)\n[ALL, TOP N, *]\n");
+			printf("eg:SELECT Ã‘Â§Ã‰Ãº Ã„ÃªÃÃ¤ ÃÃ”Â±Ã°\nwhere Â³Ã‰Â¼Â¨>Â¡Â°90Â¡Â±  top 5\nORDER BY Â³Ã‰Â¼Â¨ ASC; \n");
 			printf("============================\n");
-			printf("¸Õ²ÅµÄÃüÁî½«»áÊÇÎŞĞ§ÃüÁî£¬Èç¹ûÄúÏëÖØĞÂÖ´ĞĞ¸Õ²ÅµÄ²Ù×÷ÇëÖØĞÂÊäÈëÕıÈ·µÄÃüÁî:\n");
+			printf("Â¸Ã•Â²Ã…ÂµÃ„ÃƒÃ¼ÃÃ®Â½Â«Â»Ã¡ÃŠÃ‡ÃÃÃÂ§ÃƒÃ¼ÃÃ®Â£Â¬ÃˆÃ§Â¹Ã»Ã„ÃºÃÃ«Ã–Ã˜ÃÃ‚Ã–Â´ÃÃÂ¸Ã•Â²Ã…ÂµÃ„Â²Ã™Ã—Ã·Ã‡Ã«Ã–Ã˜ÃÃ‚ÃŠÃ¤ÃˆÃ«Ã•Ã½ÃˆÂ·ÂµÃ„ÃƒÃ¼ÃÃ®:\n");
 		}
 		break;
 	}
@@ -330,15 +179,18 @@ void deal_with_command(char cmd[], int & length)
 		bool check = false;
 		check = deal_insert_data(command, length, table_name, my_data);
 		if (check == true)
+		{
 			insertData(table_name, my_data);
+			cout << "æ’å…¥æˆåŠŸ" << endl;
+		}
 		else
 		{
-			printf("Äú¸Õ²ÅÊäÈëµÄÃüÁîÓĞ´íÎó!\n");
-			printf("Çë°´ÕÕÏÂÁĞ¸ñÊ½ÊäÈë²åÈë¼ÇÂ¼ÃüÁî\n");
-			printf("Cancel table ×Ö¶ÎÃû³Æ1 ×Ö¶ÎÃû³Æ2 ... ×Ö¶ÎÃû³Æn,;\n");
-			printf("eg:Cancel ³É¼¨ °à¼¶ ĞÔ±ğ;\n");
+			printf("Ã„ÃºÂ¸Ã•Â²Ã…ÃŠÃ¤ÃˆÃ«ÂµÃ„ÃƒÃ¼ÃÃ®Ã“ÃÂ´Ã­ÃÃ³!\n");
+			printf("Ã‡Ã«Â°Â´Ã•Ã•ÃÃ‚ÃÃÂ¸Ã±ÃŠÂ½ÃŠÃ¤ÃˆÃ«Â²Ã¥ÃˆÃ«Â¼Ã‡Ã‚Â¼ÃƒÃ¼ÃÃ®\n");
+			printf("Cancel table Ã—Ã–Â¶ÃÃƒÃ»Â³Ã†1 Ã—Ã–Â¶ÃÃƒÃ»Â³Ã†2 ... Ã—Ã–Â¶ÃÃƒÃ»Â³Ã†n,;\n");
+			printf("eg:Cancel Â³Ã‰Â¼Â¨ Â°Ã Â¼Â¶ ÃÃ”Â±Ã°;\n");
 			printf("============================\n");
-			printf("¸Õ²ÅµÄÃüÁî½«»áÊÇÎŞĞ§ÃüÁî£¬Èç¹ûÄúÏëÖØĞÂÖ´ĞĞ¸Õ²ÅµÄ²Ù×÷ÇëÖØĞÂÊäÈëÕıÈ·µÄÃüÁî:\n");
+			printf("Â¸Ã•Â²Ã…ÂµÃ„ÃƒÃ¼ÃÃ®Â½Â«Â»Ã¡ÃŠÃ‡ÃÃÃÂ§ÃƒÃ¼ÃÃ®Â£Â¬ÃˆÃ§Â¹Ã»Ã„ÃºÃÃ«Ã–Ã˜ÃÃ‚Ã–Â´ÃÃÂ¸Ã•Â²Ã…ÂµÃ„Â²Ã™Ã—Ã·Ã‡Ã«Ã–Ã˜ÃÃ‚ÃŠÃ¤ÃˆÃ«Ã•Ã½ÃˆÂ·ÂµÃ„ÃƒÃ¼ÃÃ®:\n");
 		}
 		break;
 	}
@@ -352,30 +204,33 @@ void deal_with_command(char cmd[], int & length)
 			CancelField(table_name, field_name);
 		else
 		{
-			printf("Äú¸Õ²ÅÊäÈëµÄÃüÁîÓĞ´íÎó!\n");
-			printf("Çë°´ÕÕÏÂÁĞ¸ñÊ½ÊäÈëÉ¾³ı×Ö¶ÎÃüÁî\n");
-			printf("Cancel table ×Ö¶ÎÃû³Æ1 ×Ö¶ÎÃû³Æ2 ... ×Ö¶ÎÃû³Æn,;\n");
-			printf("eg:Cancel ³É¼¨ °à¼¶ ĞÔ±ğ;\n");
+			printf("Ã„ÃºÂ¸Ã•Â²Ã…ÃŠÃ¤ÃˆÃ«ÂµÃ„ÃƒÃ¼ÃÃ®Ã“ÃÂ´Ã­ÃÃ³!\n");
+			printf("Ã‡Ã«Â°Â´Ã•Ã•ÃÃ‚ÃÃÂ¸Ã±ÃŠÂ½ÃŠÃ¤ÃˆÃ«Ã‰Â¾Â³Ã½Ã—Ã–Â¶ÃÃƒÃ¼ÃÃ®\n");
+			printf("Cancel table Ã—Ã–Â¶ÃÃƒÃ»Â³Ã†1 Ã—Ã–Â¶ÃÃƒÃ»Â³Ã†2 ... Ã—Ã–Â¶ÃÃƒÃ»Â³Ã†n,;\n");
+			printf("eg:Cancel Â³Ã‰Â¼Â¨ Â°Ã Â¼Â¶ ÃÃ”Â±Ã°;\n");
 			printf("============================\n");
-			printf("¸Õ²ÅµÄÃüÁî½«»áÊÇÎŞĞ§ÃüÁî£¬Èç¹ûÄúÏëÖØĞÂÖ´ĞĞ¸Õ²ÅµÄ²Ù×÷ÇëÖØĞÂÊäÈëÕıÈ·µÄÃüÁî:\n");
+			printf("Â¸Ã•Â²Ã…ÂµÃ„ÃƒÃ¼ÃÃ®Â½Â«Â»Ã¡ÃŠÃ‡ÃÃÃÂ§ÃƒÃ¼ÃÃ®Â£Â¬ÃˆÃ§Â¹Ã»Ã„ÃºÃÃ«Ã–Ã˜ÃÃ‚Ã–Â´ÃÃÂ¸Ã•Â²Ã…ÂµÃ„Â²Ã™Ã—Ã·Ã‡Ã«Ã–Ã˜ÃÃ‚ÃŠÃ¤ÃˆÃ«Ã•Ã½ÃˆÂ·ÂµÃ„ÃƒÃ¼ÃÃ®:\n");
 		}
 		break;
 	}
 	case 5:
 	{
 		string table_name;
-		string where_command; 
+		string where_command;
 		bool check = deal_delete_data(command, length, table_name, where_command);
 		if (check == true)
+		{
 			deleteData(table_name, where_command);
+			cout << "åˆ é™¤æˆåŠŸ" << endl;
+		}
 		else
 		{
-			printf("Äú¸Õ²ÅÊäÈëµÄÃüÁîÓĞ´íÎó!\n");
-			printf("Çë°´ÕÕÏÂÁĞ¸ñÊ½ÊäÈëdelete×Ö¶ÎÃüÁî\n");
+			printf("Ã„ÃºÂ¸Ã•Â²Ã…ÃŠÃ¤ÃˆÃ«ÂµÃ„ÃƒÃ¼ÃÃ®Ã“ÃÂ´Ã­ÃÃ³!\n");
+			printf("Ã‡Ã«Â°Â´Ã•Ã•ÃÃ‚ÃÃÂ¸Ã±ÃŠÂ½ÃŠÃ¤ÃˆÃ«deleteÃ—Ã–Â¶ÃÃƒÃ¼ÃÃ®\n");
 			printf(";\n");
 			printf("eg:;\n");
 			printf("============================\n");
-			printf("¸Õ²ÅµÄÃüÁî½«»áÊÇÎŞĞ§ÃüÁî£¬Èç¹ûÄúÏëÖØĞÂÖ´ĞĞ¸Õ²ÅµÄ²Ù×÷ÇëÖØĞÂÊäÈëÕıÈ·µÄÃüÁî:\n");
+			printf("Â¸Ã•Â²Ã…ÂµÃ„ÃƒÃ¼ÃÃ®Â½Â«Â»Ã¡ÃŠÃ‡ÃÃÃÂ§ÃƒÃ¼ÃÃ®Â£Â¬ÃˆÃ§Â¹Ã»Ã„ÃºÃÃ«Ã–Ã˜ÃÃ‚Ã–Â´ÃÃÂ¸Ã•Â²Ã…ÂµÃ„Â²Ã™Ã—Ã·Ã‡Ã«Ã–Ã˜ÃÃ‚ÃŠÃ¤ÃˆÃ«Ã•Ã½ÃˆÂ·ÂµÃ„ÃƒÃ¼ÃÃ®:\n");
 		}
 		break;
 	}
@@ -383,20 +238,21 @@ void deal_with_command(char cmd[], int & length)
 	{
 		string table_name;
 		fieldType my_field;
-		bool check  = deal_add_data(command, length, table_name, my_field);
-		if (check== true)
+		bool check = deal_add_data(command, length, table_name, my_field);
+		if (check == true)
 		{
 			addField(table_name, my_field);
+			cout << "æ·»åŠ æˆåŠŸ" << endl;
 		}
 		else
 		{
-			printf("Äú¸Õ²ÅÊäÈëµÄÃüÁîÓĞ´íÎó!\n");
-			printf("Çë°´ÕÕÒÔÏÂ¸ñÊ½ÊäÈëÃüÁî:\n");
-			printf("ADD table ×Ö¶Î Êı¾İÀàĞÍ Ô¼ÊøÌõ¼ş\n");
-			printf("eg:ADD ³É¼¨ °à¼¶ String 00;");
+			printf("Ã„ÃºÂ¸Ã•Â²Ã…ÃŠÃ¤ÃˆÃ«ÂµÃ„ÃƒÃ¼ÃÃ®Ã“ÃÂ´Ã­ÃÃ³!\n");
+			printf("Ã‡Ã«Â°Â´Ã•Ã•Ã’Ã”ÃÃ‚Â¸Ã±ÃŠÂ½ÃŠÃ¤ÃˆÃ«ÃƒÃ¼ÃÃ®:\n");
+			printf("ADD table Ã—Ã–Â¶Ã ÃŠÃ½Â¾ÃÃ€Ã ÃÃ Ã”Â¼ÃŠÃ¸ÃŒÃµÂ¼Ã¾\n");
+			printf("eg:ADD Â³Ã‰Â¼Â¨ Â°Ã Â¼Â¶ String 00;");
 			printf("PAY ATTENTION : You can only add one field\n");
 			printf("=============================================");
-			printf("¸Õ²ÅµÄÃüÁî½«»áÊÇÎŞĞ§ÃüÁî£¬Èç¹ûÄúÏëÖØĞÂÖ´ĞĞ¸Õ²ÅµÄ²Ù×÷ÇëÖØĞÂÊäÈëÕıÈ·µÄÃüÁî:\n");
+			printf("Â¸Ã•Â²Ã…ÂµÃ„ÃƒÃ¼ÃÃ®Â½Â«Â»Ã¡ÃŠÃ‡ÃÃÃÂ§ÃƒÃ¼ÃÃ®Â£Â¬ÃˆÃ§Â¹Ã»Ã„ÃºÃÃ«Ã–Ã˜ÃÃ‚Ã–Â´ÃÃÂ¸Ã•Â²Ã…ÂµÃ„Â²Ã™Ã—Ã·Ã‡Ã«Ã–Ã˜ÃÃ‚ÃŠÃ¤ÃˆÃ«Ã•Ã½ÃˆÂ·ÂµÃ„ÃƒÃ¼ÃÃ®:\n");
 		}
 		break;
 	}
@@ -414,12 +270,12 @@ void deal_with_command(char cmd[], int & length)
 		}
 		else
 		{
-			printf("Äú¸Õ²ÅÊäÈëµÄÃüÁîÓĞ´íÎó!\n");
-			printf("Çë°´ÕÕÒÔÏÂ¸ñÊ½ÊäÈëÃüÁî:\n");
-			printf("ADD table ×Ö¶Î Êı¾İÀàĞÍ Ô¼ÊøÌõ¼ş\n");
-			printf("eg:ADD ³É¼¨ °à¼¶ String 00;");
+			printf("Ã„ÃºÂ¸Ã•Â²Ã…ÃŠÃ¤ÃˆÃ«ÂµÃ„ÃƒÃ¼ÃÃ®Ã“ÃÂ´Ã­ÃÃ³!\n");
+			printf("Ã‡Ã«Â°Â´Ã•Ã•Ã’Ã”ÃÃ‚Â¸Ã±ÃŠÂ½ÃŠÃ¤ÃˆÃ«ÃƒÃ¼ÃÃ®:\n");
+			printf("ADD table Ã—Ã–Â¶Ã ÃŠÃ½Â¾ÃÃ€Ã ÃÃ Ã”Â¼ÃŠÃ¸ÃŒÃµÂ¼Ã¾\n");
+			printf("eg:ADD Â³Ã‰Â¼Â¨ Â°Ã Â¼Â¶ String 00;");
 			printf("=============================================");
-			printf("¸Õ²ÅµÄÃüÁî½«»áÊÇÎŞĞ§ÃüÁî£¬Èç¹ûÄúÏëÖØĞÂÖ´ĞĞ¸Õ²ÅµÄ²Ù×÷ÇëÖØĞÂÊäÈëÕıÈ·µÄÃüÁî:\n");
+			printf("Â¸Ã•Â²Ã…ÂµÃ„ÃƒÃ¼ÃÃ®Â½Â«Â»Ã¡ÃŠÃ‡ÃÃÃÂ§ÃƒÃ¼ÃÃ®Â£Â¬ÃˆÃ§Â¹Ã»Ã„ÃºÃÃ«Ã–Ã˜ÃÃ‚Ã–Â´ÃÃÂ¸Ã•Â²Ã…ÂµÃ„Â²Ã™Ã—Ã·Ã‡Ã«Ã–Ã˜ÃÃ‚ÃŠÃ¤ÃˆÃ«Ã•Ã½ÃˆÂ·ÂµÃ„ÃƒÃ¼ÃÃ®:\n");
 		}
 		break;
 	}
@@ -434,7 +290,7 @@ void deal_with_command(char cmd[], int & length)
 }
 
 
-int check_data_type(string name)//ÅĞ¶Ï×Ö¶ÎÊı¾İÀàĞÍ
+int check_data_type(string name)//Ã…ÃÂ¶ÃÃ—Ã–Â¶ÃÃŠÃ½Â¾ÃÃ€Ã ÃÃ
 {
 	if (strcmp(name.c_str(), "STRING") == 0)
 		return 0;
@@ -447,7 +303,7 @@ int check_data_type(string name)//ÅĞ¶Ï×Ö¶ÎÊı¾İÀàĞÍ
 	return -1;
 }
 
-int check_constraint(string name)	//ÅĞ¶ÏÔ¼ÊøÌõ¼ş
+int check_constraint(string name)	//Ã…ÃÂ¶ÃÃ”Â¼ÃŠÃ¸ÃŒÃµÂ¼Ã¾
 {
 	if (name[0] == '1' && name[0] == '0')
 		return 10;
@@ -460,696 +316,99 @@ int check_constraint(string name)	//ÅĞ¶ÏÔ¼ÊøÌõ¼ş
 	else return -1;
 }
 
-bool deal_create_data(char command[], int & length, string & table_name, vector<fieldType> field)//´¦Àí´´½¨±íµÄÊı¾İ
-{
-	bool check = false;//Èç¹ûº¬ÓĞ¶à¸ö¿Õ¸ñ
-	bool error = false;//ÅĞ¶ÏÊäÈëÊÇ·ñÓĞ´í
-
-	int count = -2;	//ÓÃÀ´Çø·Ö×Ö¶ÎµÄÊôĞÔ
-	int temp = 0;	//¼ÇÂ¼nameµÄÏÂ±ê
-
-	char * name = new char[name_length + 1];	//Ôİ´æËùÓĞµÄÊäÈë¶Îname Ö»ĞèÒªÒ»¸ö¼´¿É
-
-	fieldType  myfield;
-	for (int i = 0; i <= length; ++i)
-	{
-		//ÅĞ¶ÏÊÇ·ñÎª¿Õ¸ñ
-		if (command[i] != ' '&&command[i] != '\0') //·Ç¿Õ¸ñµÄ»°¶ÁÈë	
-		{
-			check = true;
-			if (temp == name_length - 2)
-			{
-				add_char_size(name);
-			}
-
-			name[temp++] = command[i];
-			name[temp] = '\0';
-
-		}
-		else if (command[i] == ' ' || command[i] == '\0')//ÊÇ¿Õ¸ñµÄ»°½øĞĞ´¦Àí
-		{
-			if (check == true)	//´¦Àí¿ªÊ¼µÄµÚÒ»¸ö×Ö·ûÎª¿Õ¸ñµÄÇé¿ö
-			{
-				count++;
-				check = false;
-
-				if (count == -1)	//±íÃû
-				{
-					name[temp] = '\0';
-					temp = 0;
-					table_name = name;
-				}
-				else
-				{
-					name[temp] = '\0';
-					if (count % 3 == 0)	//×Ö¶ÎÃû
-					{
-						myfield.fieldName = name;
-					}
-					else if (count % 3 == 1)//×Ö¶ÎÀàĞÍ
-					{
-						for (int i = 0; name[i] != '\0'; ++i)
-						{
-							if (name[i] >= 'a'&&name[i] <= 'z')//½«Ğ¡Ğ´×ª»»Îª´óĞ´
-								name[i] = name[i] - 32;
-						}
-						int field_type = check_data_type(name);
-						switch (field_type)
-						{
-						case 0:
-							myfield.theType = STRING;
-							break;
-						case 1:
-							myfield.theType = INT;
-							break;
-						case 2:
-							myfield.theType = DOUBLE;
-							break;
-						case 3:
-							myfield.theType = DATE;
-							break;
-						case -1:
-							return false;
-						}
-
-					}
-					else if (count % 3 == 2)//×Ö¶ÎÔ¼ÊøÌõ¼ş
-					{
-						if (temp > 3)
-							return false;
-						int judge_type = check_constraint(name);
-						switch (judge_type)
-						{
-						case 10:	// 10
-							return false;
-						case 0:		// 00
-							myfield.judgeBound = 0;
-							break;
-						case 11:	// 11
-							myfield.judgeBound = 11;
-							break;
-						case 1:		// 01
-							myfield.judgeBound = 1;
-							break;
-						case -1:
-							return false;
-						}
-						if (!error)
-						{
-							field.push_back(myfield);	//¼ÓÈëÒ»¸ö×Ö¶Î
-						}
-					}
-					temp = 0;	//Ö»ÒªÊÇ¶Áµ½¿Õ¸ñÖ®ºó¾ÍÒª½«nameÏÂ±êÖÃÎª0
-				}
-			}
-			if (error) break;
-			delete name;
-			name_length = name_length_bak;
-			name = new char[name_length + 1];
-		}
-	}
-	delete name;
-
-	return true;
+bool judgeJudge(string judge) {
+	if (judge == "=" || judge == ">" || judge == "<" || judge == "!=" || judge == ">=" || judge == "<=")
+		return true;
+	return false;
 }
-
-
-
-bool deal_cancel_data(char command[], int &length, string & table_name, vector<string> &field_name)
+bool judgeMark(string mark)
 {
-	char * name = new char[name_length];
-	bool flag = false;
-	int counter = 0;
-	int temp = 0;	//name µÄÏÂ±ê
-	for (int i = 0; i <= length; ++i)
-	{
-		if (command[i] != ' '&&command[i] != '\0')
-		{
-			flag = true;
-			if (temp == name_length - 2)
-			{
-				add_char_size(name);
-			}
-			name[temp++] = command[i];
-			name[temp] = '\0';
-		}
-		else
-		{
-			if (counter == 0)
-			{
-				table_name = name;
-				counter = 1;
-			}
-			else
-			{
-				counter++;
-				field_name.push_back(name);
-			}
-			temp = 0;
-		}
-	}
-	delete name;
-
-	if (counter <= 1)
-		flag = false;
-	return flag;
-}
-
-
-bool deal_insert_data(char command[], int & length, string & table_name, vector<pairData>& my_data)
-{
-	int counter = -1;
-
-	char *name = new char[name_length];
-	int temp = 0;
-	vector<string> field;
-	vector<string> info;
-
-	int flag = 0;
-
-	//name¼ÇÂ¼Ã¿Ò»¸ö×Ö¶Î
-	for (int i = 0; i < length; ++i)
-	{
-		if (command[i] != ' ')	//Èç¹û²»Îª' 'µÄ»° ¾Í½«Æä¼ÓÈëname
-		{
-			if (temp == name_length - 2)
-			{
-				add_char_size(name);
-			}
-			name[temp++] = command[i];
-			name[temp] = '\0';
-		}
-		else
-		{
-			if (counter == -1)
-			{
-				table_name = name;
-			}
-			else
-			{
-				if (stricmp(name, "VALUES") == 0)
-				{
-					flag = i;
-					break;
-				}
-				else
-				{
-					field.push_back(name);
-				}
-			}
-
-			temp = 0;
-			counter++;
-
-			name_length = name_length_bak;
-			delete name;
-			name = new char[name_length];
-		}
-
-	}
-
-	//½ÓÏÂÀ´´¦ÀíVALUES£»
-	bool quote = false;	//¼ÇÂ¼ÊÇ·ñ½øÈë×óÒıºÅ
-	temp = 0;
-
-	name[0] = '\0';
-	bool error = true;
-
-	for (int i = flag; i < length; ++i)
-	{
-		if (temp == name_length - 2)
-		{
-			add_char_size(name);
-		}
-		if (quote == false)	//Ã»ÓĞ½øÈë×óÒıºÅ
-		{
-			if (command[i] == ' ')	//½«¿Õ¸ñ³Ôµô
-				continue;
-			else if (command[i] == '\"')//Óöµ½ÒıºÅÄÇÃ´¾ÍÊÇ×óÒıºÅ  ½«¼ÇÂ¼ĞŞ¸ÄÎªtrue
-			{
-				quote = true;
-				error = false;
-			}
-			else if (error == true)
-			{
-				break;
-			}
-
-		}
-		else     //½øÈëÁË×óÒıºÅ
-		{
-			if (command[i] == '\"')	//Óöµ½ÓÒÒıºÅ
-			{
-				if (command[i - 1] == '\\')	//ÊÇ·ñÎª×ªÒåµÄ
-				{
-					command[temp - 1] = '"';		//Èç¹û ÊÇ×ªÒåµÄ" Ö±½Ó ½«\È¥µô
-					command[temp] = '\0';
-				}
-				else        //Èç¹û²»ÊÇ  ³ö×óÒıºÅ
-				{
-					quote = false;
-					info.push_back(name);
-					temp = 0;
-
-					delete name;
-					name_length = name_length_bak;
-					name = new char[name_length];
-				}
-			}
-			else
-			{
-				name[temp++] = command[i];
-				name[temp] = '\0';
-			}
-		}
-	}
-
-	delete name;
-
-	int my_size = 0;
-	if (field.size() != info.size())
-	{
-		error = true;
-		if (counter == 0)
-			error = false;
-	}
+	if (mark == "AND" || mark == "OR")
+		return true;
 	else
-	{
-		my_size = info.size();
-	}
-	if (my_size == 0)return false;
-	if (error == true)
-	{
 		return false;
-	}
-	else
-	{
-		pairData my_pair;
-		int i = 0;
-		vector<string>::iterator is1;
-		vector<string>::iterator is2;
-		if (field.size() != 0)
-			is1 = field.begin();
-		is2 = info.begin();
-
-		while (i++ < my_size)
+}
+bool deal_where(char command[])//Â´Â¦Ã€Ã­whereÃ“Ã¯Â¾Ã¤Â²Â»Â·Ã»ÂºÃÂ¸Ã±ÃŠÂ½ 
+{
+	int commandLen = strlen(command);
+	int first, last, commandNum;
+	part content;
+	//	memset(&content, 0, sizeof(content));
+	//bool withMarks=false;//Ã‹Â«Ã’Ã½ÂºÃ…ÂµÃ„Â±ÃªÃŠÂ¶Â·Ã»
+	first = last = commandNum = 0;
+	for (; last<commandLen; last++) {
+		if (commandNum == 0 && command[last] != ' '&&command[last] != '!'&&command[last] != '>'&&command[last] != '<'&&command[last] != '=')//get the name
+			content.listName += command[last];
+		else if (commandNum == 0)
 		{
-			if (field.size() != 0)
+			while (command[last] == ' '&&last<commandLen)
+				last++;
+			if (last >= commandLen)
+				return false;
+			if (command[last] != ' ') //consider the string judge
+				commandNum = 1;
+		}
+		if (commandNum == 1 && command[last] != ' '&&command[last] != '"')//consider judge
+			content.judge += command[last];
+		else if (commandNum == 1) {
+			if (command[last] != ' '&&command[last] != '"')//not space or double marks
+				return false;
+			else if (command[last] == ' ')//deal with space
 			{
-				my_pair.fieldName = *is1++;
+				while (last < commandLen&&command[last] == ' ')
+					last++;
+				if (command[last] != '"' || last >= commandLen)
+					return false;
+			}
+			if (commandNum == 1 && command[last] == '"')//deal with the first "
+			{
+				commandNum = 2;
+				last++;
+				if (last >= commandLen)
+					return false;
+			}
+		}
+		if (commandNum == 2 && command[last] != '"'&&command[last] != '\\')//Ã’Ã‘Â¾Â­Â´Â¦Ã€Ã­ÃÃªÂµÃšÃ’Â»Â¸Ã¶Ã‹Â«Ã’Ã½ÂºÃ…
+			content.constant += command[last];
+		else if (command[last] == '\\')//Â¶Ã”Ã“ÃšÃ—ÂªÃ’Ã¥Ã—Ã–Â·Ã»Â½Ã¸ÃÃÂ´Â¦Ã€Ã­
+		{
+			last++;
+			if (last >= commandLen)
+				return false;
+			content.constant += command[last];
+		}
+		else if (command[last] == '"')
+		{
+			commandNum = 3;
+			last++;
+		}
+		if (commandNum == 3 && last<commandLen){
+			while (command[last] == ' '&&last<commandLen)
+				last++;
+			if (last >= commandLen)
+				return false;
+			while (last < commandLen&&command[last] != ' ')
+				content.mark += command[last++];
+			if (last >= commandLen)
+				return false;
+			if (judgeJudge(content.judge) && judgeMark(content.mark))
+			{
+				content.listName.clear();
+				content.judge.clear();
+				content.constant.clear();
+				content.mark.clear();
+				commandNum = 0;
+				while (command[last] == ' '&&last < commandLen)
+					last++;
+				last--;
 			}
 			else
-				my_pair.fieldName = "";
-			my_pair.data = *is2++;
-			my_data.push_back(my_pair);
-		}
-	}
-	return true;
-}
-
-//ÒÑ½â¾ö¿Õ¸ñ
-bool deal_update_data(char command[], int & length, string & table_name,
-	vector<pairData> & updata_data, string & where_command
-	)
-{
-
-	pairData my_pair;
-	char *name = new char[name_length]; //Ôİ´æÃ¿¸ö×Ö¶ÎÒÔ¼°¼ÇÂ¼
-
-	int temp = 0;	//nameµÄÏÂ±ê
-	int counter = 0;	//×Ü¹²ÓĞ¶àÉÙ¸ö×Ö¶ÎÒÔ¼°¼ÇÂ¼
-
-	int flag = 0;	//¼ÇÂ¼Óöµ½whereµÄÏÂ±ê
-
-	bool quote = false;	//°ïÖúÅĞ¶ÏÊÇ·ñ½øÈëÒıºÅ
-	bool effec = false;	//°ïÖúÅĞ¶Ï¿Õ¸ñÊÇ·ñ¸ÃÉáÆú  Ä¿Ç°¿Õ¸ñ¸ÃÉáÆú
-	bool have_where = false;
-
-	for (int i = 0; i <= length; ++i)
-	{
-		if (temp == name_length - 2)
-		{
-			add_char_size(name);
-		}
-
-		if (quote == false)	//Ã»ÓĞ½øÈëÒıºÅ  ÊÇ×Ö¶Î»òÕß±íÃû
-		{
-			if (command[i] == ' ' || command[i] == '=')	//Îª¿Õ¸ñ
-			{
-				if (stricmp(name, "where") == 0)	//±ØĞëÊÇÃ»ÓĞ½øÈëÒıºÅµÄwhereÓï¾ä²ÅĞĞ
-				{
-					have_where = true;
-					flag = i;
-					break;
-				}
-				if (effec == true)	//Èç¹û×Ö·û´®¿ªÍ·ÊÇ¿Õ¸ñ¾Í²»»á½øÈë
-				{
-					if (counter == 0)
-						table_name = name;
-					else if (counter % 2 == 1)
-					{
-						my_pair.fieldName = name;
-					}
-					else
-					{
-						delete name;
-						return false;
-					}
-
-					effec = false;
-
-					temp = 0;
-					delete name;
-					name_length = name_length_bak;
-					name = new char[name_length];
-					counter++;
-				}
-
-			}
-			else if (command[i] == '\"')//É¨µ½Ë«ÒıºÅ
-			{
-				if (command[i - 1] == '=')	//½øÈëË«ÒıºÅ
-				{
-					quote = true;
-				}
-				else if (command[i - 1] == '\\')	//ÊÇ×Ö¶ÎÖĞµÄË«ÒıºÅ
-				{
-					command[temp - 1] = '\"';
-					command[temp] = '\0';
-				}
-			}
-			else       //
-			{
-				effec = true;	//¿ªÍ·µÄ¿Õ¸ñÉáÆú
-
-				name[temp++] = command[i];
-				name[temp] = '\0';
-			}
-		}
-		else if (quote == true)//½øÈëÒıºÅÁË
-		{
-			if (command[i] == '\"')
-			{
-				if (command[i - 1] == '\\')
-				{
-					command[temp - 1] = '\"';
-					command[temp] = '\0';
-				}
-				else
-				{
-					if (counter % 2 == 0)	//Èç¹û²»Åä¶ÔµÄ»°  ¾ÍÊÇ´íµÄ
-					{
-						my_pair.data = name;
-						updata_data.push_back(my_pair);
-
-						temp = 0;
-						delete name;
-						name_length = name_length_bak;
-						name = new char[name_length];
-						counter++;
-					}
-					else
-					{
-						delete name;
-						return false;
-					}
-				}
-			}
-			else
-			{
-				name[temp++] = command[i];
-				name[temp] = '\0';
-			}
-		}
-	}
-	delete name;
-
-	if (counter % 2 == 0)return false;
-
-	if (have_where == false) return true;
-
-	for (int i = flag; i < length; ++i)	//Èç¹û¿ªÍ·ÓĞ¿Õ¸ñ¾ÍÌø³ö
-	{
-		if (command[i] != ' ')
-		{
-			flag = i;
-			break;
-		}
-	}
-
-	temp = 0;
-	for (int i = flag; i < length; ++i)
-	{
-		if (temp == name_length - 2)
-		{
-			add_char_size(name);
-		}
-		name[temp++] = command[i];
-	}
-	name[temp] = '\0';
-
-	bool is_correct = deal_where(name);
-	where_command = name;
-	delete name;
-
-	return is_correct;
-
-}
-bool deal_drop_data(char command[], int & length, string & table_name)
-{
-	char * name = new char[name_length];
-
-	bool check = false;
-	int counter = 0;
-	int temp = 0;
-	for (int i = 0; i <= length; ++i)
-	{
-		if (name_length - 2 == temp)
-		{
-			add_char_size(name);
-		}
-		if (command[i] == ' ' || command[i] == '\0')
-		{
-			if (check == true)
-				counter++;
-			check = false;
-		}
-		else
-		{
-			if (counter == 1)
 				return false;
-			check = true;
-			name[temp++] = command[i];
-			name[temp] = '\0';
 		}
 	}
-	table_name = name;
-	delete name;
-
-	return true;
+	return judgeJudge(content.judge) && !content.mark.length();
 }
 
-bool deal_delete_data(char command[], int & length, string & table_name, string & where_command)
-{
 
-	char *name = new char[name_length];
-	int temp = 0;
-	int flag;
 
-	int effec = false;
-	int counter = 0;
-	for (int i = 0; i <= length; ++i)
-	{
-		if (temp == name_length - 2)
-		{
-			add_char_size(name);
-		}
 
-		if (command[i] == ' ' || command[i] == '\0')
-		{
-			if (effec == false)continue;
-			effec = false;
-			if (stricmp(name, "where") == 0)
-			{
-				flag = i;
-				break;
-			}
-			if (counter == 0)
-			{
-				table_name = name;
-			}
-			if (counter > 1)
-				return false;
-			counter++;
-		}
-		else
-		{
-			effec = true;
-
-			name[temp++] = command[i];
-			name[temp] = '\0';
-
-			temp = 0;
-			delete name;
-			name_length = name_length_bak;
-			name = new char[name_length];
-		}
-	}
-
-	for (int i = flag; i < length; ++i)	//Èç¹û¿ªÍ·ÓĞ¿Õ¸ñ¾ÍÌø³ö
-	{
-		if (command[i] != ' ')
-		{
-			flag = i;
-			break;
-		}
-	}
-
-	temp = 0;
-	for (int i = flag; i < length; ++i)
-	{
-		if (temp == name_length - 2)
-		{
-			add_char_size(name);
-		}
-		name[temp++] = command[i];
-	}
-	name[temp] = '\0';
-
-	bool is_correct = deal_where(name);
-	where_command = name;
-	delete name;
-	return is_correct;
-}
-
-bool deal_add_data(char command[], int &length, string &table_name, fieldType & my_field)
-{
-	int counter = 0;
-	int temp = 0;	//¼ÇÂ¼nameµÄÏÂ±ê
-	bool error = false;
-	bool check = false;	//´¦Àí¶à¸ö¿Õ¸ñ
-	char * name = new char[name_length];	//Ôİ´æËùÓĞµÄÊäÈë¶Î name Ö»ĞèÒªÒ»¸ö¼´¿É
-
-	fieldType myfield;
-	myfield.fieldNum = 0;
-	for (int i = 0; i <= length; ++i)
-	{
-		if (command[i] != ' '&&command[i] != '\0') //·Ç¿Õ¸ñµÄ»°¶ÁÈë	
-		{
-			check = true;
-			if (temp == name_length - 2)
-			{
-				add_char_size(name);
-			}
-			name[temp++] = command[i];
-			name[temp] = '\0';
-		}
-		else
-		{
-			if (counter == 0)
-			{
-				table_name = name;
-			}
-			else if (counter == 1)
-			{
-				myfield.fieldName = name;
-				myfield.fieldNum++;
-			}
-			else if (counter == 2)
-			{
-				for (int i = 0; name[i] != '\0'; ++i)
-				{
-					if (name[i] >= 'a'&&name[i] <= 'z')//½«Ğ¡Ğ´×ª»»Îª´óĞ´
-						name[i] = name[i] - 32;
-				}
-				int field_type = check_data_type(name);
-				switch (field_type)
-				{
-				case 0:
-					myfield.theType = STRING;
-					break;
-				case 1:
-					myfield.theType = INT;
-					break;
-				case 2:
-					myfield.theType = DOUBLE;
-					break;
-				case 3:
-					myfield.theType = DATE;
-					break;
-				case -1:
-					error = true;
-					printf("We don't have the data type %s\n", name);
-					break;
-				}
-				if (!error)
-					myfield.fieldNum++;
-
-			}
-			else if (counter == 3)
-			{
-				if (temp > 3)
-					printf("Error! Constriant bits should equal to 2");
-				int judge_type = check_constraint(name);
-				switch (judge_type)
-				{
-				case 10:	// 10
-					error = true;
-					printf("The PK field can't be null");
-					break;
-				case 0:		// 00
-					myfield.judgeBound = 0;
-					break;
-				case 11:	// 11
-					myfield.judgeBound = 11;
-					break;
-				case 1:		// 01
-					myfield.judgeBound = 1;
-					break;
-				case -1:
-					error = true;
-					printf("We don't have %s constriant type\n", name);
-					break;
-				}
-				if (!error)
-					myfield.fieldNum++;
-
-			}
-			counter++;
-			temp = 0;
-			if (error)
-			{
-				return false;
-			}
-			delete name;
-			name_length = name_length_bak;
-			name = new char[name_length + 1];
-		}
-	}
-	delete name;
-
-	if (myfield.fieldNum != 3)
-	{
-		return false;
-	}
-	return true;
-}
-void add_char_size(char name[])
-{
-	char *temp = new char[name_length + 1];
-	strcpy(temp, name);
-	name = new char[name_length + add_size];
-	name_length += add_size;
-	strcpy(name, temp);
-	delete temp;
-}
-
-bool deal_order(char order_command[])
-{
-	return true;
-}
-
-bool deal_where(char where_command[])
-{
-	return true;
-}

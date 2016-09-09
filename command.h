@@ -1,54 +1,27 @@
-#ifndef COMMAND_H
+ï»¿#ifndef COMMAND_H
 #define COMMAND_H
+#include "main.h"
+#include "Chk_Dat_Cmd.h"
+#include "Chk_SD_Cmd.h"
+#include "Chk_Table_Cmd.h"
+#include "HandleData.h"
+#include "HandleTable.h"
+#include "SelectData.h"
 
-#include <iostream>
-#include <string>
-#include <string.h>
-#include <stdlib.h>
-#include <stdio.h>
-#include <vector>
-
-using namespace std;
-
-typedef enum{
-	STRING, INT, DOUBLE, DATE,
-}dataType;
-typedef struct {
-	int year;
-	int month;
-	int day;
-}date;
-typedef struct{
-	int rowNum;//ĞĞºÅ
-	string Data[10];
-}rowData;
-typedef struct{
-	int fieldNum;//×Ö¶ÎĞòºÅ
-	string fieldName;//×Ö¶ÎÃû³Æ
-	dataType theType;//Êı¾İÀàĞÍ
-	int judgeBound;//Ô¼ÊøÌõ¼ş
-}fieldType;
-typedef struct{
-	string fieldName;
-	string data;
-}pairData;//×Ö¶ÎÓëÊı¾İµÄÒ»×é¶ÔÓ¦
-typedef struct{
-	vector<fieldType> field;
-	vector<rowData> data;
-
-	string name;
-
-}table;//±íµÄ½á¹¹
-
-
+struct part
+{
+	string listName;//Ã—Ã–Â¶ÃÃƒÃ»Â³Ã†
+	string mark;//and or
+	string constant;//Â³Â£ÃÂ¿ Ã—Ã–Â¶ÃÃ–Âµ
+	string judge;//Â¸Ã·Ã–Ã–Â·Ã»ÂºÃ…
+};
 
 const int data_num = 4;
 const int add_size = 30;
 const int command_num = 8;
 const int command_length = 30;
 
-static int name_length = 20;
-const int name_length_bak = 20;
+
 const char command_content[command_num][command_length] =
 {
 	"CREATE", "DROP", "SELECT", "INSERT",
@@ -56,40 +29,19 @@ const char command_content[command_num][command_length] =
 };
 
 
-//ËùÓĞÕâĞ©º¯Êı½ÓÊÜµÄ²ÎÊı¶¼ÊÇ³ıÈ¥ÁË¹Ø¼ü×ÖÃüÁî×Ö¶Î(CREATE,DROP,SELECTµÈµÈ)µÄÃüÁî  ¶øÇÒ¿ªÍ·×Ö·û±ØÈ»²»Îª¿Õ¸ñ
+//cmdÂ²ÃÃŠÃ½ Â³Ã”ÂµÃ´Â»Ã˜Â³ÂµÂµÃ„Ã’Â»ÃŒÃµÃƒÃ¼ÃÃ®
+void deal_with_command(char cmd[], int &length);
 
-
-bool deal_update_data(char command[], int & length, string & table_name, 
-	vector<pairData> & updata_data, string & where_command
-	);
-bool deal_delete_data(char command[], int & length, string & table_name, string & where_command);
-
-bool deal_select_data(char command[], int & length, string & table_name,
-	string & where_command, string & order_command, vector<string> & field_name);
-
-bool deal_insert_data(char command[], int & length, string & table_name, vector<pairData>& my_data);
-
-bool deal_cancel_data(char command[], int &length, string & table_name, vector<string> & field_name);
-
-bool deal_add_data(char command[], int &length, string & table_name, fieldType & my_field);
-
-bool deal_drop_data(char command[], int & length,string & table_name);
-
-//´¦Àí´´½¨±íµÄÊı¾İ
-bool deal_create_data(char command[], int & length, string & table_name, vector<fieldType> field);
-
-
-//cmd²ÎÊı ³Ôµô»Ø³µµÄÒ»ÌõÃüÁî
-void deal_with_command(char cmd[], int &length);   
-
-int check_data_type(string name);//ÅĞ¶Ï×Ö¶ÎÊı¾İÀàĞÍ
-int check_constraint(string name);	//ÅĞ¶ÏÔ¼ÊøÌõ¼ş
+int check_data_type(string name);//Ã…ÃÂ¶ÃÃ—Ã–Â¶ÃÃŠÃ½Â¾ÃÃ€Ã ÃÃ
+int check_constraint(string name);	//Ã…ÃÂ¶ÃÃ”Â¼ÃŠÃ¸ÃŒÃµÂ¼Ã¾
 
 bool deal_where(char where_command[]);
 bool deal_order(char order_command[]);
 
-void add_char_size(char name[]);
+char* add_char_size(char name[]);
 
-
+bool judgeJudge(string judge);
+bool judgeMark(string mark);
+bool deal_where(char command[]);
 
 #endif
