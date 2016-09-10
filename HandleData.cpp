@@ -11,10 +11,17 @@ void insertData(string tableName, vector<pairData> _dataPair)
 	//求加map
 	for (int i = 0; i<_dataPair.size(); i++)
 	{
-		int colNum = a.fieldmap[_dataPair[i].fieldName];
+		if (a.fieldmap.count(_dataPair[i].fieldName) == 0)
+		{
+
+		}
+		else
+		{
+			int colNum = a.fieldmap[_dataPair[i].fieldName];
 			//field_num[_dataPair[i].fieldName];//确定该字段所对应的列�?
-		vis[i] = 1;//标记该列插入数据
-		newRow.Data[colNum] = _dataPair[i].data;//在新建的行中该列位置插入数据
+			vis[i] = 1;//标记该列插入数据
+			newRow.Data[colNum] = _dataPair[i].data;//在新建的行中该列位置插入数据
+		}
 	}
 	for (int i = 0; i<a.field.size(); i++)
 	{

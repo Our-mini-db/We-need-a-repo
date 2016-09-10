@@ -352,6 +352,8 @@ bool deal_update_data(char command[], int & length, string & table_name,vector<p
 				}
 				else
 				{
+					quote = false;
+
 					if (counter % 2 == 0)	//Èç¹û²»Åä¶ÔµÄ»°  ¾ÍÊÇ´íµÄ
 					{
 						my_pair.data = name;
@@ -377,7 +379,6 @@ bool deal_update_data(char command[], int & length, string & table_name,vector<p
 			}
 		}
 	}
-	delete name;
 
 	if (counter % 2 == 0)return false;
 

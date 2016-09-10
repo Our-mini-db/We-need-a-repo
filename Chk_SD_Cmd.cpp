@@ -1,5 +1,16 @@
 ﻿#include "Chk_SD_Cmd.h"
 #include "Command.h"
+
+void copy(char * str1, string & str2)
+{
+	int length = str2.size();
+	for (int i = 0; i < length; ++i)
+	{
+		str1[i] = str2[i];
+	}
+
+	str1[length] = '\0';
+}
 bool deal_select_data(char command[], int & length, string & table_name, string & where_command, string & order_command, vector<string>&field_name)
 {
 	char *name = new char[name_length];
@@ -131,14 +142,27 @@ bool deal_select_data(char command[], int & length, string & table_name, string 
 				{
 					if (counter == 1)
 						return false;
-					bool check = deal_where(name);
-					if (check == false)
-						return false;
-					else
-						where_command = name;
+				
+					char *str = new char[where_command.size()+1];
+					copy(str, where_command);
+					bool check = deal_where(str);
+					delete str;
 
+					if (check == false)
+					{
+						return false;
+					}
 					temp2 = i;
 					break;
+				}
+				else
+				{
+					where_command += name;
+
+					temp = 0;
+					delete name;
+					name_length = name_length_bak;
+					name = new char[name_length];
 				}
 			}
 			else
@@ -157,7 +181,7 @@ bool deal_select_data(char command[], int & length, string & table_name, string 
 		else            //ÓÐorderÓï¾ä»òÕßtopÓï¾ä
 		{
 
-			temp2 = 0;
+			//temp2 = 0;
 			for (int i = temp2; i <= length; ++i)
 			{
 				if (command[i] != ' ')
