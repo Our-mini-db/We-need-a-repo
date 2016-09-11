@@ -156,8 +156,9 @@ bool deal_insert_data(char command[], int & length, string & table_name, vector<
 	return true;
 }
 
-bool deal_drop_data(char command[], int & length, string & table_name)
+bool deal_drop_data(char command[], int & length, string & table_name,int & flag)
 {
+
 	char * name = new char[name_length];
 
 	bool check = false;
@@ -171,6 +172,24 @@ bool deal_drop_data(char command[], int & length, string & table_name)
 		}
 		if (command[i] == ' ' || command[i] == '\0')
 		{
+			if (check == false)continue;
+			if (_stricmp(name, "DATABASE") == 0)
+			{
+				if (flag == 3)
+					return false;
+				else
+				{
+					flag = 3;
+					counter--;
+					temp = 0;
+				}
+			}
+			else
+			{
+				if (flag == 0)
+					return false;
+				table_name = name;
+			}
 			if (check == true)
 				counter++;
 			check = false;
@@ -178,13 +197,15 @@ bool deal_drop_data(char command[], int & length, string & table_name)
 		else
 		{
 			if (counter == 1)
+			{
 				return false;
+			}
 			check = true;
 			name[temp++] = command[i];
 			name[temp] = '\0';
 		}
 	}
-	table_name = name;
+
 	delete name;
 
 	return true;

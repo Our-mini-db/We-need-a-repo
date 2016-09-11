@@ -153,7 +153,8 @@ bool deal_cancel_data(char command[], int &length, string & table_name, vector<s
 	return flag;
 }
 
-bool deal_create_data(char command[], int & length, string & table_name, vector<fieldType>& field)//´¦Àí´´½¨±íµÄÊý¾Ý
+
+bool deal_create_data(char command[], int & length, string & table_name, vector<fieldType>& field,int & flag)//´¦Àí´´½¨±íµÄÊý¾Ý
 {
 	bool check = false;//Èç¹ûº¬ÓÐ¶à¸ö¿Õ¸ñ
 	bool error = false;//ÅÐ¶ÏÊäÈëÊÇ·ñÓÐ´í
@@ -181,79 +182,100 @@ bool deal_create_data(char command[], int & length, string & table_name, vector<
 		}
 		else if (command[i] == ' ' || command[i] == '\0')//ÊÇ¿Õ¸ñµÄ»°½øÐÐ´¦Àí
 		{
-			if (check == true)	//´¦Àí¿ªÊ¼µÄµÚÒ»¸ö×Ö·ûÎª¿Õ¸ñµÄÇé¿ö
-			{
+			if (check == false)continue;
 				count++;
 				check = false;
 
-				if (count == -1)	//±íÃû
+			if (count == -1)	//表名
+			{
+				table_name = name;
+				if (flag == 2)
 				{
-					name[temp] = '\0';
-					temp = 0;
-					table_name = name;
+					bool legal = is_legal(name);
+					if (legal == false)
+					{
+						printf("sorry , you have input a name is the same as key string.\n");
+						return false;
+					}
+				}
+				if (_stricmp(name, "database") == 0)
+				{
+					flag = 2;
+					count--;
 				}
 				else
 				{
-					name[temp] = '\0';
-					if (count % 3 == 0)	//×Ö¶ÎÃû
+					if (flag == 0)
 					{
-						myfield.fieldName = name;
+						printf("Please open or create a database!\n");
+						return false;
 					}
-					else if (count % 3 == 1)//×Ö¶ÎÀàÐÍ
-					{
-						for (int i = 0; name[i] != '\0'; ++i)
-						{
-							if (name[i] >= 'a'&&name[i] <= 'z')//½«Ð¡Ð´×ª»»Îª´óÐ´
-								name[i] = name[i] - 32;
-						}
-						int field_type = check_data_type(name);
-						switch (field_type)
-						{
-						case 0:
-							myfield.theType = STRING;
-							break;
-						case 1:
-							myfield.theType = INT;
-							break;
-						case 2:
-							myfield.theType = DOUBLE;
-							break;
-						case 3:
-							myfield.theType = DATE;
-							break;
-						case -1:
-							return false;
-						}
-
-					}
-					else if (count % 3 == 2)//×Ö¶ÎÔ¼ÊøÌõ¼þ
-					{
-						if (temp > 3)
-							return false;
-						int judge_type = check_constraint(name);
-						switch (judge_type)
-						{
-						case 10:	// 10
-							return false;
-						case 0:		// 00
-							myfield.limitation = 0;
-							break;
-						case 11:	// 11
-							myfield.limitation = 11;
-							break;
-						case 1:		// 01
-							myfield.limitation = 1;
-							break;
-						case -1:
-							return false;
-						}
-						if (!error)
-						{
-							field.push_back(myfield);	//¼ÓÈëÒ»¸ö×Ö¶Î
-						}
-					}
-					temp = 0;	//Ö»ÒªÊÇ¶Áµ½¿Õ¸ñÖ®ºó¾ÍÒª½«nameÏÂ±êÖÃÎª0
 				}
+				temp = 0;
+			}
+			else
+			{
+				if (flag == 2)
+					return false;
+				name[temp] = '\0';
+				if (count % 3 == 0)	//×Ö¶ÎÃû
+				{
+					myfield.fieldName = name;
+				}
+				else if (count % 3 == 1)//×Ö¶ÎÀàÐÍ
+				{
+					for (int i = 0; name[i] != '\0'; ++i)
+					{
+						if (name[i] >= 'a'&&name[i] <= 'z')//½«Ð¡Ð´×ª»»Îª´óÐ´
+							name[i] = name[i] - 32;
+					}
+					int field_type = check_data_type(name);
+					switch (field_type)
+					{
+					case 0:
+						myfield.theType = STRING;
+						break;
+					case 1:
+						myfield.theType = INT;
+						break;
+					case 2:
+						myfield.theType = DOUBLE;
+						break;
+					case 3:
+						myfield.theType = DATE;
+						break;
+					case -1:
+						return false;
+					}
+
+				}
+				else if (count % 3 == 2)//×Ö¶ÎÔ¼ÊøÌõ¼þ
+				{
+					if (temp > 3)
+						return false;
+					int judge_type = check_constraint(name);
+					switch (judge_type)
+					{
+					case 10:	// 10
+						return false;
+					case 0:		// 00
+						myfield.limitation = 0;
+						break;
+					case 11:	// 11
+						myfield.limitation = 11;
+						break;
+					case 1:		// 01
+						myfield.limitation = 1;
+						break;
+					case -1:
+						return false;
+					}
+					if (!error)
+					{
+						field.push_back(myfield);	//¼ÓÈëÒ»¸ö×Ö¶Î
+					}
+				}
+				temp = 0;	//Ö»ÒªÊÇ¶Áµ½¿Õ¸ñÖ®ºó¾ÍÒª½«nameÏÂ±êÖÃÎª0
 			}
 			if (error) break;
 			delete name;
@@ -261,8 +283,14 @@ bool deal_create_data(char command[], int & length, string & table_name, vector<
 			name = new char[name_length + 1];
 		}
 	}
+
+	if (count == -2||((count+3)%3!=2))return false;
 	delete name;
 
 	return true;
 }
 
+bool deal_open_data(char command[], int & length, string & database)
+{
+	return true;
+}

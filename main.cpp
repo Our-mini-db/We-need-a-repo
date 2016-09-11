@@ -209,16 +209,22 @@ int main()
 	char ch = 0;
 	char* command = new char[name_length];
 
-	static int bitnum = 0;
+    int bitnum = 0;
+	string database = "";
+	int flag = 0;
 	while ((ch = getchar()) != EOF)//°¤¸ö×Ö·û½øÐÐ´¦Àí
 	{
 		if (ch == ';')//Èç¹û¶Áµ½ ; ±íÊ¾ÊäÈëÒ»ÌõÃüÁî   Ö§²»Ö§³Ö ·ÖºÅµÄÊäÈë
 		{
 			int cmd = -1;
 			command[bitnum] = '\0';	//¸Õ²ÅÊäÈëµÄÖ¸Áî(½ö½«»Ø³µ³Ôµô)
-			//cout << command << endl;
-			//cout << command << endl;
-			deal_with_command(command, bitnum);	//´¦ÀíÕâÌõÃüÁî
+
+			int check = deal_with_command(command, bitnum, flag, database);	//处理这条命令
+			if (check == -1)
+			{
+				printf("Please open a database or CREATE a database!\n");
+			}
+
 			bitnum = 0;
 
 			//ÖØÐÂ·ÖÅäcommandµÄÄÚ´æ´óÐ¡

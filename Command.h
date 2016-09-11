@@ -18,19 +18,27 @@ struct part
 
 const int data_num = 4;
 const int add_size = 30;
-const int command_num = 8;
+const int command_num = 10;
 const int command_length = 30;
-
+const int key_num = 13;
 
 const char command_content[command_num][command_length] =
 {
 	"CREATE", "DROP", "SELECT", "INSERT",
 	"CANCEL", "DELETE", "ADD", "UPDATE",
+	"OPEN"
 };
 
+const char key_string[key_num][command_length] =
+{
+	"CREATE", "DROP", "SELECT", "INSERT",
+	"CANCEL", "DELETE", "ADD", "UPDATE",
+	"OPEN", "DATABASE", "TOP", "ORDER",
+	"WHERE",
+};
 
 //cmd²ÎÊý ³Ôµô»Ø³µµÄÒ»ÌõÃüÁî
-void deal_with_command(char cmd[], int &length);
+int deal_with_command(char cmd[], int & length, int & flag, string & database);
 
 int check_data_type(string name);//ÅÐ¶Ï×Ö¶ÎÊý¾ÝÀàÐÍ
 int check_constraint(string name);	//ÅÐ¶ÏÔ¼ÊøÌõ¼þ
@@ -43,4 +51,6 @@ bool judgeJudge(string judge);
 bool judgeMark(string mark);
 bool deal_where(const char command[]);
 
+
+bool is_legal(char *name);
 #endif

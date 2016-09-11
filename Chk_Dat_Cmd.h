@@ -9,7 +9,7 @@ bool deal_delete_data(char command[], int & length, string & table_name, string 
 
 bool deal_insert_data(char command[], int & length, string & table_name, vector<pairData>& my_data);
 
-bool deal_drop_data(char command[], int & length, string & table_name);
+bool deal_drop_data(char command[], int & length, string & table_name,int & flag );
 
 
 

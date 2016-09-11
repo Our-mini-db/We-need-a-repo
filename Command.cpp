@@ -1,6 +1,15 @@
 ﻿#define _CRT_SERURE_NO_WARNINGS
 #include "Command.h"
 
+bool is_legal(char *name)
+{
+	for (int i = 0; i < key_num; ++i)
+	{
+		if (_stricmp(name, key_string[i]) == 0)
+			return false;
+	}
+}
+
 char* add_char_size(char name[])
 {
 	char *temp = new char[name_length + 1];
@@ -29,7 +38,7 @@ bool deal_order(char order_command[])
 	return true;
 }
 
-void deal_with_command(char cmd[], int & length)
+int deal_with_command(char cmd[], int & length,int & flag ,string & database)
 {
 	char * command = new char[length + 1];
 	bool check = false;  //Èç¹ûÃüÁî¿ªÊ¼Ê±¾ÍÊÇ¿Õ¸ñÔõÃ´ °ì ¼ÓÒ»¸ö±ê¼Ç±äÁ¿
@@ -58,7 +67,7 @@ void deal_with_command(char cmd[], int & length)
 	{
 		printf("Command Error!");
 		command[6] = '\0';
-		return;
+		return 0;
 	}
 	for (int i = 0; command[i] != '\0'; ++i)	//½«Ð¡Ð´×ÖÄ¸×ª»¯Îª´óÐ´×ÖÄ¸
 	{
@@ -77,7 +86,7 @@ void deal_with_command(char cmd[], int & length)
 	if (command_kind == -1)	//Èç¹ûÎªÎ´¶¨ÒåµÄÖ¸Áî×Ö¶Î£¬½áÊøµ±Ç°Ö¸ÁîµÄ´¦Àí
 	{
 		printf("We don't have %s command\n", command);
-		return;
+		return 0;
 	}
 	//cout << command << endl;
 	//½«Ê£ÏÂµÄÃüÁî×Ö¶ÎÏòÇ°Å²µ½×Ö·û´®Ê×£¬Ò²¼´ÏÖÔÚµÄcommand×Ö·û´®´æµÄÃüÁî²»°üº¬CREATE£¬UPDATEµÈ×Ö¶Î£»
@@ -105,51 +114,73 @@ void deal_with_command(char cmd[], int & length)
 
 	length = temp;
 
+	//备份database以及flag
+	int temp_flag = flag;
+	string temp_database(database);
+
 	switch (command_kind)	//°ËÌõÃüÁîÒÔ¼°´íÎó´¦Àí
 	{
 	case 0:	//´´½¨±íµÄÃüÁîÊý¾Ý´¦Àí
 	{
 		string table_name;
 		vector<fieldType> my_field;
-		bool check = deal_create_data(command, length, table_name, my_field);
+
+		bool check = deal_create_data(command, length, table_name, my_field,flag);
+		
 		if (check == true)
 		{
-			createTable(table_name, my_field);
-			cout << "创建成功" << endl;
+			if (flag == 1)	//flag=1代表已经open一个数据库  创建一个表   
+			{
+				createTable(table_name, my_field);
+			}
+			else if (flag == 2)	//flag=2代表创建一个数据库
+			{
+				database = table_name;
+				//createDatabase();
+				database = temp_database;
+				flag = temp_flag;
+			}
+			else
+				return -1;
+			printf("创建成功\n");
 		}
 		else
 		{
-			printf("Äú¸Õ²ÅÊäÈëµÄÃüÁîÓÐ´íÎó!\n");
-			printf("Çë°´ÕÕÏÂÁÐ¸ñÊ½ÊäÈë²åÈë½¨±íÃüÁî\n");
-			printf("CREATE table;\n×Ö¶Î1 Êý¾ÝÀàÐÍ Ô¼ÊøÌõ¼þ\n×Ö¶Î2 Êý¾ÝÀàÐÍ Ô¼ÊøÌõ¼þ\n");
-			printf("eg:CREATE ³É¼¨ ÊýÑ§ int 10 Ó¢Óï int 00;\n");
-			printf("============================\n");
-			printf("¸Õ²ÅµÄÃüÁî½«»áÊÇÎÞÐ§ÃüÁî£¬Èç¹ûÄúÏëÖØÐÂÖ´ÐÐ¸Õ²ÅµÄ²Ù×÷ÇëÖØÐÂÊäÈëÕýÈ·µÄÃüÁî:\n");
+			printf("create failed!\n");
+		
 		}
 		break;
 	}
 	case 1:	//drop
 	{
 		string table_name;
-		bool check = deal_drop_data(command, length, table_name);
+
+		bool check = deal_drop_data(command, length, table_name, flag);
+			
 		if (check == true)
 		{
-			dropTable(table_name);
+			if (flag == 3)	//找到了数据库名字
+			{
+				database = table_name;
+				//drop database();
+				database = temp_database;
+				flag = temp_flag;
+			}
+			else if (flag == 1)
+			{
+				dropTable(table_name);
+			}
 			cout << "删表成功" << endl;
 		}
 		else
 		{
-			printf("Äú¸Õ²ÅÊäÈëµÄÃüÁîÓÐ´íÎó!\n");
-			printf("Çë°´ÕÕÏÂÁÐ¸ñÊ½ÊäÈë²åÈëÉ¾³ýÃüÁî\n");
-			printf("DROP table;\n");
-			printf("eg:DROP ³É¼¨;\n");
-			printf("============================\n");
-			printf("¸Õ²ÅµÄÃüÁî½«»áÊÇÎÞÐ§ÃüÁî£¬Èç¹ûÄúÏëÖØÐÂÖ´ÐÐ¸Õ²ÅµÄ²Ù×÷ÇëÖØÐÂÊäÈëÕýÈ·µÄÃüÁî:\n");
+			printf("DROP failed;\n");
 		}
 		break;
 	}
 	case 2:
 	{
+		if (flag == 0)return -1;
 		string table_name;
 		string where_command;
 		vector<string> field_name;
@@ -161,18 +192,13 @@ void deal_with_command(char cmd[], int & length)
 		}
 		else
 		{
-			printf("Äú¸Õ²ÅÊäÈëµÄÃüÁîÓÐ´íÎó!\n");
-			printf("Çë°´ÕÕÏÂÁÐ¸ñÊ½ÊäÈë²åÈë¼ÇÂ¼ÃüÁî\n");
-			printf("SELECT 	table ×Ö¶Î1 ×Ö¶Î2 ×Ö¶Î3\
-				   				   nwhere Ìõ¼þ\nORDER  by ×Ö¶Î ASC(DESC)\n[ALL, TOP N, *]\n");
-			printf("eg:SELECT Ñ§Éú ÄêÁä ÐÔ±ð\nwhere ³É¼¨>¡°90¡±  top 5\nORDER BY ³É¼¨ ASC; \n");
-			printf("============================\n");
-			printf("¸Õ²ÅµÄÃüÁî½«»áÊÇÎÞÐ§ÃüÁî£¬Èç¹ûÄúÏëÖØÐÂÖ´ÐÐ¸Õ²ÅµÄ²Ù×÷ÇëÖØÐÂÊäÈëÕýÈ·µÄÃüÁî:\n");
+			printf("select error!\n");
 		}
 		break;
 	}
 	case 3:
 	{
+		if (flag == 0)return -1;
 		string table_name;
 		vector<pairData> my_data;
 		bool check = false;
@@ -184,17 +210,13 @@ void deal_with_command(char cmd[], int & length)
 		}
 		else
 		{
-			printf("Äú¸Õ²ÅÊäÈëµÄÃüÁîÓÐ´íÎó!\n");
-			printf("Çë°´ÕÕÏÂÁÐ¸ñÊ½ÊäÈë²åÈë¼ÇÂ¼ÃüÁî\n");
-			printf("Cancel table ×Ö¶ÎÃû³Æ1 ×Ö¶ÎÃû³Æ2 ... ×Ö¶ÎÃû³Æn,;\n");
-			printf("eg:Cancel ³É¼¨ °à¼¶ ÐÔ±ð;\n");
-			printf("============================\n");
-			printf("¸Õ²ÅµÄÃüÁî½«»áÊÇÎÞÐ§ÃüÁî£¬Èç¹ûÄúÏëÖØÐÂÖ´ÐÐ¸Õ²ÅµÄ²Ù×÷ÇëÖØÐÂÊäÈëÕýÈ·µÄÃüÁî:\n");
+			printf("insert!\n");
 		}
 		break;
 	}
 	case 4:
 	{
+		if (flag == 0)return -1;
 		string table_name;
 		vector<string> field_name;
 		bool check = false;
@@ -203,17 +225,13 @@ void deal_with_command(char cmd[], int & length)
 			CancelField(table_name, field_name);
 		else
 		{
-			printf("Äú¸Õ²ÅÊäÈëµÄÃüÁîÓÐ´íÎó!\n");
-			printf("Çë°´ÕÕÏÂÁÐ¸ñÊ½ÊäÈëÉ¾³ý×Ö¶ÎÃüÁî\n");
-			printf("Cancel table ×Ö¶ÎÃû³Æ1 ×Ö¶ÎÃû³Æ2 ... ×Ö¶ÎÃû³Æn,;\n");
-			printf("eg:Cancel ³É¼¨ °à¼¶ ÐÔ±ð;\n");
-			printf("============================\n");
-			printf("¸Õ²ÅµÄÃüÁî½«»áÊÇÎÞÐ§ÃüÁî£¬Èç¹ûÄúÏëÖØÐÂÖ´ÐÐ¸Õ²ÅµÄ²Ù×÷ÇëÖØÐÂÊäÈëÕýÈ·µÄÃüÁî:\n");
+			printf("cancel failed!\n");
 		}
 		break;
 	}
 	case 5:
 	{
+		if (flag == 0)return -1;
 		string table_name;
 		string where_command;
 		bool check = deal_delete_data(command, length, table_name, where_command);
@@ -224,17 +242,13 @@ void deal_with_command(char cmd[], int & length)
 		}
 		else
 		{
-			printf("Äú¸Õ²ÅÊäÈëµÄÃüÁîÓÐ´íÎó!\n");
-			printf("Çë°´ÕÕÏÂÁÐ¸ñÊ½ÊäÈëdelete×Ö¶ÎÃüÁî\n");
-			printf(";\n");
-			printf("eg:;\n");
-			printf("============================\n");
-			printf("¸Õ²ÅµÄÃüÁî½«»áÊÇÎÞÐ§ÃüÁî£¬Èç¹ûÄúÏëÖØÐÂÖ´ÐÐ¸Õ²ÅµÄ²Ù×÷ÇëÖØÐÂÊäÈëÕýÈ·µÄÃüÁî:\n");
+			printf("delete failed!\n");
 		}
 		break;
 	}
 	case 6:
 	{
+		if (flag == 0)return -1;
 		string table_name;
 		fieldType my_field;
 		bool check = deal_add_data(command, length, table_name, my_field);
@@ -245,18 +259,13 @@ void deal_with_command(char cmd[], int & length)
 		}
 		else
 		{
-			printf("Äú¸Õ²ÅÊäÈëµÄÃüÁîÓÐ´íÎó!\n");
-			printf("Çë°´ÕÕÒÔÏÂ¸ñÊ½ÊäÈëÃüÁî:\n");
-			printf("ADD table ×Ö¶Î Êý¾ÝÀàÐÍ Ô¼ÊøÌõ¼þ\n");
-			printf("eg:ADD ³É¼¨ °à¼¶ String 00;");
-			printf("PAY ATTENTION : You can only add one field\n");
-			printf("=============================================");
-			printf("¸Õ²ÅµÄÃüÁî½«»áÊÇÎÞÐ§ÃüÁî£¬Èç¹ûÄúÏëÖØÐÂÖ´ÐÐ¸Õ²ÅµÄ²Ù×÷ÇëÖØÐÂÊäÈëÕýÈ·µÄÃüÁî:\n");
+			printf("add failed!\n");
 		}
 		break;
 	}
 	case 7:
 	{
+		if (flag == 0)return -1;
 		string table_name;
 		string where_command;
 		vector<pairData> new_update_data;
@@ -269,15 +278,26 @@ void deal_with_command(char cmd[], int & length)
 		}
 		else
 		{
-			printf("Äú¸Õ²ÅÊäÈëµÄÃüÁîÓÐ´íÎó!\n");
-			printf("Çë°´ÕÕÒÔÏÂ¸ñÊ½ÊäÈëÃüÁî:\n");
-			printf("ADD table ×Ö¶Î Êý¾ÝÀàÐÍ Ô¼ÊøÌõ¼þ\n");
-			printf("eg:ADD ³É¼¨ °à¼¶ String 00;");
-			printf("=============================================");
-			printf("¸Õ²ÅµÄÃüÁî½«»áÊÇÎÞÐ§ÃüÁî£¬Èç¹ûÄúÏëÖØÐÂÖ´ÐÐ¸Õ²ÅµÄ²Ù×÷ÇëÖØÐÂÊäÈëÕýÈ·µÄÃüÁî:\n");
+			printf("update failed!\n");
 		}
 		break;
 	}
+	case 8:
+	{
+		bool check = false;
+		check = deal_open_data(command, length, database);
+		if (check == true)
+		{
+			//open a database ...
+			flag = 1;
+		}
+		else
+		{
+			printf("open error\n");
+		}
+		break;
+	}
+
 	default:
 	{
 		printf("Please input command correctly!\n");
