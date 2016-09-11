@@ -118,6 +118,8 @@ bool deal_select_data(char command[], int & length, string & table_name, string 
 		counter = 0;
 		space = false;
 
+		int temp_flag = 0;
+
 		bool quote = false; //ÅÐ¶ÏÊÇ·ñ½øÈëË«ÒýºÅ
 		for (int i = temp1; i <= length; ++i)
 		{
@@ -140,6 +142,8 @@ bool deal_select_data(char command[], int & length, string & table_name, string 
 				space = false;
 				if (_stricmp(name, "order") == 0 || _stricmp(name, "top") == 0)
 				{
+					if (_stricmp(name, "top") == 0)
+						temp_flag = 1;
 					if (counter == 1)
 						return false;
 				
@@ -172,7 +176,6 @@ bool deal_select_data(char command[], int & length, string & table_name, string 
 				name[temp] = '\0';
 			}
 		}
-
 		if (temp2 == 0)	//Ã»ÓÐorderÓï¾ä
 		{
 			order_command = "";
@@ -191,6 +194,15 @@ bool deal_select_data(char command[], int & length, string & table_name, string 
 				}
 			}
 			temp = 0;
+			if (temp_flag == 1)
+			{
+				name[0] = 't';
+				name[1] = 'o';
+				name[2] = 'p';
+				name[3] = '\0';
+				temp = 3;
+				if (temp2 == length)return false;
+			}
 			for (int i = temp2; i <= length; ++i)
 			{
 				if (name_length == temp - 2)

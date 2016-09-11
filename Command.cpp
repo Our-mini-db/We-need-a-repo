@@ -8,6 +8,7 @@ bool is_legal(char *name)
 		if (_stricmp(name, key_string[i]) == 0)
 			return false;
 	}
+	return true;
 }
 
 char* add_char_size(char name[])
@@ -188,7 +189,7 @@ int deal_with_command(char cmd[], int & length,int & flag ,string & database)
 		bool check = deal_select_data(command, length, table_name, where_command, order_command, field_name);
 		if (check == true)
 		{
-			selectData(table_name, where_command, order_command, field_name);
+			selectData( table_name, where_command, order_command, field_name);
 		}
 		else
 		{
@@ -222,7 +223,7 @@ int deal_with_command(char cmd[], int & length,int & flag ,string & database)
 		bool check = false;
 		check = deal_cancel_data(command, length, table_name, field_name);
 		if (check == true)
-			CancelField(table_name, field_name);
+			CancelField( table_name, field_name);
 		else
 		{
 			printf("cancel failed!\n");
@@ -237,7 +238,7 @@ int deal_with_command(char cmd[], int & length,int & flag ,string & database)
 		bool check = deal_delete_data(command, length, table_name, where_command);
 		if (check == true)
 		{
-			deleteData(table_name, where_command);
+			deleteData( table_name, where_command);
 			cout << "删除成功" << endl;
 		}
 		else
@@ -254,7 +255,7 @@ int deal_with_command(char cmd[], int & length,int & flag ,string & database)
 		bool check = deal_add_data(command, length, table_name, my_field);
 		if (check == true)
 		{
-			addField(table_name, my_field);
+			addField( table_name, my_field);
 			cout << "添加成功" << endl;
 		}
 		else
@@ -305,7 +306,7 @@ int deal_with_command(char cmd[], int & length,int & flag ,string & database)
 	}
 	}
 	delete command;
-
+	return true;
 }
 
 
@@ -353,7 +354,7 @@ bool deal_where(const char command[])//´¦ÀíwhereÓï¾ä²»·ûºÏ¸ñÊ½
 	int first, last, commandNum;
 	part content;
 	//	memset(&content, 0, sizeof(content));
-	//bool withMarks=false;//Ë«ÒýºÅµÄ±êÊ¶·û
+	//bool withMarks=false;//双引号的标识符
 	first = last = commandNum = 0;
 	for (; last<commandLen; last++) {
 		if (commandNum == 0 && command[last] != ' '&&command[last] != '!'&&command[last] != '>'&&command[last] != '<'&&command[last] != '=')//get the name
@@ -387,9 +388,9 @@ bool deal_where(const char command[])//´¦ÀíwhereÓï¾ä²»·ûºÏ¸ñÊ½
 					return false;
 			}
 		}
-		if (commandNum == 2 && command[last] != '"'&&command[last] != '\\')//ÒÑ¾­´¦ÀíÍêµÚÒ»¸öË«ÒýºÅ
+		if (commandNum == 2 && command[last] != '"'&&command[last] != '\\')//已经处理完第一个双引号
 			content.constant += command[last];
-		else if (command[last] == '\\')//¶ÔÓÚ×ªÒå×Ö·û½øÐÐ´¦Àí
+		else if (command[last] == '\\')//对于转义字符进行处理
 		{
 			last++;
 			if (last >= commandLen)
@@ -402,7 +403,7 @@ bool deal_where(const char command[])//´¦ÀíwhereÓï¾ä²»·ûºÏ¸ñÊ½
 			last++;
 		}
 		if (commandNum == 3 && last<commandLen){
-			while (command[last] == ' '&&last<commandLen)
+			while ((command[last] == ' ' || command[last] == ')') && last<commandLen)
 				last++;
 			if (last >= commandLen)
 				return false;
@@ -417,7 +418,7 @@ bool deal_where(const char command[])//´¦ÀíwhereÓï¾ä²»·ûºÏ¸ñÊ½
 				content.constant.clear();
 				content.mark.clear();
 				commandNum = 0;
-				while (command[last] == ' '&&last < commandLen)
+				while ((command[last] == ' ' || command[last] == '(') && last < commandLen)
 					last++;
 				last--;
 			}
