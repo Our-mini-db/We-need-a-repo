@@ -5,10 +5,10 @@
 using namespace std;
 struct part
 {
-	string listName;//×Ö¶ÎÃû³Æ
+	string listName;//å­—æ®µåç§°
 	string mark;//and or
-	string constant;//³£Á¿ ×Ö¶ÎÖµ
-	string judge;//¸÷ÖÖ·ûºÅ
+	string constant;//å¸¸é‡ å­—æ®µå€¼
+	string judge;//å„ç§ç¬¦å·
 };
 bool judgeJudge(string judge) {
 	if (judge == "=" || judge == ">" || judge == "<" || judge == "!=" || judge == ">=" || judge == "<=")
@@ -22,13 +22,13 @@ bool judgeMark(string mark)
 	else
 		return false;
 }
-bool deal_where(char command[])//´¦ÀíwhereÓï¾ä²»·ûºÏ¸ñÊ½ 
+bool deal_where(char command[])//å¤„ç†whereè¯­å¥ä¸ç¬¦åˆæ ¼å¼ 
 {
 	int commandLen = strlen(command);
 	int first, last,commandNum;
 	part content;
 //	memset(&content, 0, sizeof(content));
-	//bool withMarks=false;//Ë«ÒıºÅµÄ±êÊ¶·û
+	//bool withMarks=false;//åŒå¼•å·çš„æ ‡è¯†ç¬¦
 	first = last = commandNum=0;
 	for (; last<commandLen;last++) {
 		if (commandNum ==0 && command[last] != ' '&&command[last] != '!'&&command[last]!='>'&&command[last] != '<'&&command[last]!='=')//get the name
@@ -62,9 +62,9 @@ bool deal_where(char command[])//´¦ÀíwhereÓï¾ä²»·ûºÏ¸ñÊ½
 					return false;
 			}
 		}
-		if (commandNum == 2 && command[last] != '"'&&command[last]!='\\')//ÒÑ¾­´¦ÀíÍêµÚÒ»¸öË«ÒıºÅ
+		if (commandNum == 2 && command[last] != '"'&&command[last]!='\\')//å·²ç»å¤„ç†å®Œç¬¬ä¸€ä¸ªåŒå¼•å·
 			content.constant += command[last];
-		else if (command[last] == '\\')//¶ÔÓÚ×ªÒå×Ö·û½øĞĞ´¦Àí
+		else if (command[last] == '\\')//å¯¹äºè½¬ä¹‰å­—ç¬¦è¿›è¡Œå¤„ç†
 		{
 			last++;
 			if (last >= commandLen)
@@ -80,7 +80,7 @@ bool deal_where(char command[])//´¦ÀíwhereÓï¾ä²»·ûºÏ¸ñÊ½
 			while ((command[last] == ' '||command[last]==')')&&last<commandLen)
 				last++;
 			if (last >= commandLen)
-				return false;
+				return true;
 			while (last < commandLen&&command[last] != ' ')
 				content.mark += command[last++];
 			if(last>=commandLen)
