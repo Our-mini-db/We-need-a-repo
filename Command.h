@@ -7,7 +7,7 @@
 #include "HandleData.h"
 #include "HandleTable.h"
 #include "SelectData.h"
-
+#include "HandleDatabase.h"
 struct part
 {
 	string listName;//×Ö¶ÎÃû³Æ

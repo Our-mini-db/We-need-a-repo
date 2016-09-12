@@ -8,6 +8,7 @@
 #include <map>
 #include <stack>
 #include <string>
+#include <direct.h>
 #include <algorithm>
 using namespace std;
 typedef enum{
@@ -51,6 +52,8 @@ typedef struct
 	string value;
 	string rel;
 	string fieldType;
+	int left;
+	int right;
 }shortString;//whereè¯­å¥å¤„ç†
 typedef   struct
 {
@@ -65,6 +68,6 @@ typedef map<string, int>findFieldnum;
 void input_Command();//输入命令
 //void dealWith_Command(string command);//处理命令 提取command的信息
 //vector<int> dealWith_Where(table theTable, string where_command);//处理where语句
-table openTable(string tableName);//打开磁盘中的表
-void saveTable(table _theSavingTable);//保存磁盘中的表
+table openTable(string databaseName, string tableName);//打开磁盘中的表
+void saveTable(string databaseName, table _theSavingTable);//保存磁盘中的表
 #endif

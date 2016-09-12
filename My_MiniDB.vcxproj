@@ -74,6 +74,7 @@
     <ClCompile Include="Command.cpp" />
     <ClCompile Include="Deal_With_Where.cpp" />
     <ClCompile Include="HandleData.cpp" />
+    <ClCompile Include="HandleDatabase.cpp" />
     <ClCompile Include="HandleTable.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="SelectData.cpp" />
@@ -85,6 +86,7 @@
     <ClInclude Include="Command.h" />
     <ClInclude Include="Deal_With_Where.h" />
     <ClInclude Include="HandleData.h" />
+    <ClInclude Include="HandleDatabase.h" />
     <ClInclude Include="HandleTable.h" />
     <ClInclude Include="main.h" />
     <ClInclude Include="SelectData.h" />

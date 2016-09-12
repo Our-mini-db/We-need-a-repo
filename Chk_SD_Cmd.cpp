@@ -18,8 +18,8 @@ bool deal_select_data(char command[], int & length, string & table_name, string 
 
 	int counter = 0;
 	int flag = 0;
-	int temp1 = 0;	//¼ÇÂ¼whereÓï¾ä
-	int temp2 = 0;	//¼ÇÂ¼order Óï¾ä
+	int temp1 = 0;	//录脟脗录where脫茂戮盲
+	int temp2 = 0;	//录脟脗录order 脫茂戮盲
 
 	bool space = false;
 
@@ -113,14 +113,14 @@ bool deal_select_data(char command[], int & length, string & table_name, string 
 			}
 		}
 	}
-	else if (temp1 != 0)//¿Ï¶¨ÓÐwhere×Ö¶Î
+	else if (temp1 != 0)//驴脧露篓脫脨where脳脰露脦
 	{
 		counter = 0;
 		space = false;
 
 		int temp_flag = 0;
 
-		bool quote = false; //ÅÐ¶ÏÊÇ·ñ½øÈëË«ÒýºÅ
+		bool quote = false; //脜脨露脧脢脟路帽陆酶脠毛脣芦脪媒潞脜
 		for (int i = temp1; i <= length; ++i)
 		{
 			if (command[i] != ' ')
@@ -146,8 +146,8 @@ bool deal_select_data(char command[], int & length, string & table_name, string 
 						temp_flag = 1;
 					if (counter == 1)
 						return false;
-				
-					char *str = new char[where_command.size()+1];
+
+					char *str = new char[where_command.size() + 1];
 					copy(str, where_command);
 					bool check = deal_where(str);
 					delete str;
@@ -162,7 +162,7 @@ bool deal_select_data(char command[], int & length, string & table_name, string 
 				else
 				{
 					where_command += name;
-
+					where_command += " ";
 					temp = 0;
 					delete name;
 					name_length = name_length_bak;
@@ -176,12 +176,12 @@ bool deal_select_data(char command[], int & length, string & table_name, string 
 				name[temp] = '\0';
 			}
 		}
-		if (temp2 == 0)	//Ã»ÓÐorderÓï¾ä
+		if (temp2 == 0)	//脙禄脫脨order脫茂戮盲
 		{
 			order_command = "";
 			return true;
 		}
-		else            //ÓÐorderÓï¾ä»òÕßtopÓï¾ä
+		else            //脫脨order脫茂戮盲禄貌脮脽top脫茂戮盲
 		{
 
 			//temp2 = 0;
@@ -220,4 +220,3 @@ bool deal_select_data(char command[], int & length, string & table_name, string 
 	delete name;
 	return true;
 }
-

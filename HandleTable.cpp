@@ -1,5 +1,5 @@
-#include "HandleTable.h"
-void createTable(string tableName, vector<fieldType> field)
+﻿#include "HandleTable.h"
+void createTable(string databaseName, string tableName, vector<fieldType> field)
 {
 	table TheTable;
 	TheTable.name = tableName;
@@ -7,19 +7,20 @@ void createTable(string tableName, vector<fieldType> field)
 	{
 		TheTable.field.push_back(var);
 	}
-	saveTable(TheTable);
+	saveTable(databaseName,TheTable);
+	cout << "创建表成功" << endl;
 }
-void dropTable(string tableName)
+void dropTable(string databaseName, string tableName)
 {
-	openTable(tableName);
+	openTable(databaseName,tableName);
 }
-void addField(string tableName, fieldType newField)
+void addField(string databaseName, string tableName, fieldType newField)
 {
-	table tempTable = openTable(tableName);
+	table tempTable = openTable(databaseName,tableName);
 	tempTable.field.push_back(newField);
-	saveTable(tempTable);
+	saveTable(databaseName,tempTable);
 }
-void CancelField(string tableName, vector<string> allFieldName)
+void CancelField(string databaseName, string tableName, vector<string> allFieldName)
 {
 
 }

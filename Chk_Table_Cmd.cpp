@@ -3,15 +3,15 @@
 bool deal_add_data(char command[], int &length, string &table_name, fieldType & myfield)
 {
 	int counter = 0;
-	int temp = 0;	//¼ÇÂ¼nameµÄÏÂ±ê
+	int temp = 0;	//录脟脗录name碌脛脧脗卤锚
 	bool error = false;
-	bool check = false;	//´¦Àí¶à¸ö¿Õ¸ñ
-	char * name = new char[name_length];	//ÔÝ´æËùÓÐµÄÊäÈë¶Î name Ö»ÐèÒªÒ»¸ö¼´¿É
+	bool check = false;	//麓娄脌铆露脿赂枚驴脮赂帽
+	char * name = new char[name_length];	//脭脻麓忙脣霉脫脨碌脛脢盲脠毛露脦 name 脰禄脨猫脪陋脪禄赂枚录麓驴脡
 
 	myfield.fieldNum = 0;
 	for (int i = 0; i <= length; ++i)
 	{
-		if (command[i] != ' '&&command[i] != '\0') //·Ç¿Õ¸ñµÄ»°¶ÁÈë	
+		if (command[i] != ' '&&command[i] != '\0') //路脟驴脮赂帽碌脛禄掳露脕脠毛	
 		{
 			check = true;
 			if (temp == name_length - 2)
@@ -36,7 +36,7 @@ bool deal_add_data(char command[], int &length, string &table_name, fieldType & 
 			{
 				for (int i = 0; name[i] != '\0'; ++i)
 				{
-					if (name[i] >= 'a'&&name[i] <= 'z')//½«Ð¡Ð´×ª»»Îª´óÐ´
+					if (name[i] >= 'a'&&name[i] <= 'z')//陆芦脨隆脨麓脳陋禄禄脦陋麓贸脨麓
 						name[i] = name[i] - 32;
 				}
 				int field_type = check_data_type(name);
@@ -118,7 +118,7 @@ bool deal_cancel_data(char command[], int &length, string & table_name, vector<s
 	char * name = new char[name_length];
 	bool flag = false;
 	int counter = 0;
-	int temp = 0;	//name µÄÏÂ±ê
+	int temp = 0;	//name 碌脛脧脗卤锚
 	for (int i = 0; i <= length; ++i)
 	{
 		if (command[i] != ' '&&command[i] != '\0')
@@ -154,21 +154,21 @@ bool deal_cancel_data(char command[], int &length, string & table_name, vector<s
 }
 
 
-bool deal_create_data(char command[], int & length, string & table_name, vector<fieldType>& field,int & flag)//´¦Àí´´½¨±íµÄÊý¾Ý
+bool deal_create_data(char command[], int & length, string & table_name, vector<fieldType>& field, int & flag)//麓娄脌铆麓麓陆篓卤铆碌脛脢媒戮脻
 {
-	bool check = false;//Èç¹ûº¬ÓÐ¶à¸ö¿Õ¸ñ
-	bool error = false;//ÅÐ¶ÏÊäÈëÊÇ·ñÓÐ´í
+	bool check = false;//脠莽鹿没潞卢脫脨露脿赂枚驴脮赂帽
+	bool error = false;//脜脨露脧脢盲脠毛脢脟路帽脫脨麓铆
 
-	int count = -2;	//ÓÃÀ´Çø·Ö×Ö¶ÎµÄÊôÐÔ
-	int temp = 0;	//¼ÇÂ¼nameµÄÏÂ±ê
+	int count = -2;	//脫脙脌麓脟酶路脰脳脰露脦碌脛脢么脨脭
+	int temp = 0;	//录脟脗录name碌脛脧脗卤锚
 
-	char * name = new char[name_length + 1];	//ÔÝ´æËùÓÐµÄÊäÈë¶Îname Ö»ÐèÒªÒ»¸ö¼´¿É
+	char * name = new char[name_length + 1];	//脭脻麓忙脣霉脫脨碌脛脢盲脠毛露脦name 脰禄脨猫脪陋脪禄赂枚录麓驴脡
 
 	fieldType  myfield;
 	for (int i = 0; i <= length; ++i)
 	{
-		//ÅÐ¶ÏÊÇ·ñÎª¿Õ¸ñ
-		if (command[i] != ' '&&command[i] != '\0') //·Ç¿Õ¸ñµÄ»°¶ÁÈë	
+		//脜脨露脧脢脟路帽脦陋驴脮赂帽
+		if (command[i] != ' '&&command[i] != '\0') //路脟驴脮赂帽碌脛禄掳露脕脠毛	
 		{
 			check = true;
 			if (temp == name_length - 2)
@@ -180,13 +180,13 @@ bool deal_create_data(char command[], int & length, string & table_name, vector<
 			name[temp] = '\0';
 
 		}
-		else if (command[i] == ' ' || command[i] == '\0')//ÊÇ¿Õ¸ñµÄ»°½øÐÐ´¦Àí
+		else if (command[i] == ' ' || command[i] == '\0')//脢脟驴脮赂帽碌脛禄掳陆酶脨脨麓娄脌铆
 		{
 			if (check == false)continue;
-				count++;
-				check = false;
+			count++;
+			check = false;
 
-			if (count == -1)	//表名
+			if (count == -1)	//琛ㄥ悕
 			{
 				table_name = name;
 				if (flag == 2)
@@ -218,15 +218,15 @@ bool deal_create_data(char command[], int & length, string & table_name, vector<
 				if (flag == 2)
 					return false;
 				name[temp] = '\0';
-				if (count % 3 == 0)	//×Ö¶ÎÃû
+				if (count % 3 == 0)	//脳脰露脦脙没
 				{
 					myfield.fieldName = name;
 				}
-				else if (count % 3 == 1)//×Ö¶ÎÀàÐÍ
+				else if (count % 3 == 1)//脳脰露脦脌脿脨脥
 				{
 					for (int i = 0; name[i] != '\0'; ++i)
 					{
-						if (name[i] >= 'a'&&name[i] <= 'z')//½«Ð¡Ð´×ª»»Îª´óÐ´
+						if (name[i] >= 'a'&&name[i] <= 'z')//陆芦脨隆脨麓脳陋禄禄脦陋麓贸脨麓
 							name[i] = name[i] - 32;
 					}
 					int field_type = check_data_type(name);
@@ -249,7 +249,7 @@ bool deal_create_data(char command[], int & length, string & table_name, vector<
 					}
 
 				}
-				else if (count % 3 == 2)//×Ö¶ÎÔ¼ÊøÌõ¼þ
+				else if (count % 3 == 2)//脳脰露脦脭录脢酶脤玫录镁
 				{
 					if (temp > 3)
 						return false;
@@ -272,10 +272,10 @@ bool deal_create_data(char command[], int & length, string & table_name, vector<
 					}
 					if (!error)
 					{
-						field.push_back(myfield);	//¼ÓÈëÒ»¸ö×Ö¶Î
+						field.push_back(myfield);	//录脫脠毛脪禄赂枚脳脰露脦
 					}
 				}
-				temp = 0;	//Ö»ÒªÊÇ¶Áµ½¿Õ¸ñÖ®ºó¾ÍÒª½«nameÏÂ±êÖÃÎª0
+				temp = 0;	//脰禄脪陋脢脟露脕碌陆驴脮赂帽脰庐潞贸戮脥脪陋陆芦name脧脗卤锚脰脙脦陋0
 			}
 			if (error) break;
 			delete name;
@@ -284,7 +284,7 @@ bool deal_create_data(char command[], int & length, string & table_name, vector<
 		}
 	}
 
-	if (count == -2||((count+3)%3!=2))return false;
+	if (count == -2 || ((count + 3) % 3 != 2))return false;
 	delete name;
 
 	return true;
@@ -296,11 +296,11 @@ bool deal_open_data(char command[], int & length, string & database)
 	int now = 0;
 	database.clear();
 	for (; now < len&&command[now] != ' '; now++)
-		 database += command[now];
+		database += command[now];
 	while (now < len&&command[now] == ' ')
-		 now++;
+		now++;
 	length = database.length();
 	if (now != len)
-		 return false;
+		return false;
 	return true;
 }

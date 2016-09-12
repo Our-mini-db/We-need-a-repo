@@ -42,6 +42,9 @@
     <ClCompile Include="Deal_With_Where.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="HandleDatabase.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="main.h">
@@ -69,6 +72,9 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="Deal_With_Where.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="HandleDatabase.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

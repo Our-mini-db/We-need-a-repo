@@ -39,14 +39,14 @@ bool deal_order(char order_command[])
 	return true;
 }
 
-int deal_with_command(char cmd[], int & length,int & flag ,string & database)
+int deal_with_command(char cmd[], int & length, int & flag, string & database)
 {
 	char * command = new char[length + 1];
-	bool check = false;  //Èç¹ûÃüÁî¿ªÊ¼Ê±¾ÍÊÇ¿Õ¸ñÔõÃ´ °ì ¼ÓÒ»¸ö±ê¼Ç±äÁ¿
+	bool check = false;  //脠莽鹿没脙眉脕卯驴陋脢录脢卤戮脥脢脟驴脮赂帽脭玫脙麓 掳矛 录脫脪禄赂枚卤锚录脟卤盲脕驴
 	int temp = 0;
 
-	int k = 0;	//¼ÇÂ¼µÚ¼¸¸öÎª·ÇÃüÁî×Ö¶Î
-	for (int i = 0; i < length; ++i)	//¶ÁÈëÃ¿ÌõÃüÁîµÄµÚÒ»¸ö×Ö¶Î
+	int k = 0;	//录脟脗录碌脷录赂赂枚脦陋路脟脙眉脕卯脳脰露脦
+	for (int i = 0; i < length; ++i)	//露脕脠毛脙驴脤玫脙眉脕卯碌脛碌脷脪禄赂枚脳脰露脦
 	{
 		if (temp > 6)break;
 		if (cmd[i] != ' ')
@@ -70,13 +70,13 @@ int deal_with_command(char cmd[], int & length,int & flag ,string & database)
 		command[6] = '\0';
 		return 0;
 	}
-	for (int i = 0; command[i] != '\0'; ++i)	//½«Ð¡Ð´×ÖÄ¸×ª»¯Îª´óÐ´×ÖÄ¸
+	for (int i = 0; command[i] != '\0'; ++i)	//陆芦脨隆脨麓脳脰脛赂脳陋禄炉脦陋麓贸脨麓脳脰脛赂
 	{
 		if (command[i] <= 'z'&&command[i] >= 'a')
 			command[i] = command[i] - 32;
 	}
 	int command_kind = -1;
-	for (int i = 0; i < command_num; ++i)	//ÅÐ¶ÏÖ¸ÁîÊÇ·ñÔÚÖ¸Áî¼¯ÖÐÒÑ±»¶¨Òå
+	for (int i = 0; i < command_num; ++i)	//脜脨露脧脰赂脕卯脢脟路帽脭脷脰赂脕卯录炉脰脨脪脩卤禄露篓脪氓
 	{
 		if (strcmp(command_content[i], command) == 0)
 		{
@@ -84,14 +84,14 @@ int deal_with_command(char cmd[], int & length,int & flag ,string & database)
 			break;
 		}
 	}
-	if (command_kind == -1)	//Èç¹ûÎªÎ´¶¨ÒåµÄÖ¸Áî×Ö¶Î£¬½áÊøµ±Ç°Ö¸ÁîµÄ´¦Àí
+	if (command_kind == -1)	//脠莽鹿没脦陋脦麓露篓脪氓碌脛脰赂脕卯脳脰露脦拢卢陆谩脢酶碌卤脟掳脰赂脕卯碌脛麓娄脌铆
 	{
 		printf("We don't have %s command\n", command);
 		return 0;
 	}
 	//cout << command << endl;
-	//½«Ê£ÏÂµÄÃüÁî×Ö¶ÎÏòÇ°Å²µ½×Ö·û´®Ê×£¬Ò²¼´ÏÖÔÚµÄcommand×Ö·û´®´æµÄÃüÁî²»°üº¬CREATE£¬UPDATEµÈ×Ö¶Î£»
-	//²¢ÇÒÃüÁî¿ªÍ·²»º¬¿Õ¸ñ 
+	//陆芦脢拢脧脗碌脛脙眉脕卯脳脰露脦脧貌脟掳脜虏碌陆脳脰路没麓庐脢脳拢卢脪虏录麓脧脰脭脷碌脛command脳脰路没麓庐麓忙碌脛脙眉脕卯虏禄掳眉潞卢CREATE拢卢UPDATE碌脠脳脰露脦拢禄
+	//虏垄脟脪脙眉脕卯驴陋脥路虏禄潞卢驴脮赂帽 
 	check = false;
 	temp = 0;
 
@@ -115,40 +115,39 @@ int deal_with_command(char cmd[], int & length,int & flag ,string & database)
 
 	length = temp;
 
-	//备份database以及flag
+	//澶囦唤database浠ュ強flag
 	int temp_flag = flag;
 	string temp_database(database);
 
-	switch (command_kind)	//°ËÌõÃüÁîÒÔ¼°´íÎó´¦Àí
+	switch (command_kind)	//掳脣脤玫脙眉脕卯脪脭录掳麓铆脦贸麓娄脌铆
 	{
-	case 0:	//´´½¨±íµÄÃüÁîÊý¾Ý´¦Àí
+	case 0:	//麓麓陆篓卤铆碌脛脙眉脕卯脢媒戮脻麓娄脌铆
 	{
 		string table_name;
 		vector<fieldType> my_field;
 
-		bool check = deal_create_data(command, length, table_name, my_field,flag);
-		
+		bool check = deal_create_data(command, length, table_name, my_field, flag);
+
 		if (check == true)
 		{
-			if (flag == 1)	//flag=1代表已经open一个数据库  创建一个表   
+			if (flag == 1)	//flag=1浠ｈ〃宸茬粡open涓€涓暟鎹簱  鍒涘缓涓€涓〃   
 			{
-				createTable(table_name, my_field);
+				createTable(database,table_name, my_field);
 			}
-			else if (flag == 2)	//flag=2代表创建一个数据库
+			else if (flag == 2)	//flag=2浠ｈ〃鍒涘缓涓€涓暟鎹簱
 			{
 				database = table_name;
-				//createDatabase();
+				createDataBase(database);
 				database = temp_database;
 				flag = temp_flag;
 			}
 			else
 				return -1;
-			printf("创建成功\n");
 		}
 		else
 		{
 			printf("create failed!\n");
-		
+
 		}
 		break;
 	}
@@ -157,21 +156,20 @@ int deal_with_command(char cmd[], int & length,int & flag ,string & database)
 		string table_name;
 
 		bool check = deal_drop_data(command, length, table_name, flag);
-			
+
 		if (check == true)
 		{
-			if (flag == 3)	//找到了数据库名字
+			if (flag == 3)	//鎵惧埌浜嗘暟鎹簱鍚嶅瓧
 			{
 				database = table_name;
-				//drop database();
+				dropDatabase(database);
 				database = temp_database;
 				flag = temp_flag;
 			}
 			else if (flag == 1)
 			{
-				dropTable(table_name);
+				dropTable(database,table_name);
 			}
-			cout << "删表成功" << endl;
 		}
 		else
 		{
@@ -187,9 +185,10 @@ int deal_with_command(char cmd[], int & length,int & flag ,string & database)
 		vector<string> field_name;
 		string order_command;
 		bool check = deal_select_data(command, length, table_name, where_command, order_command, field_name);
+		//check = true;
 		if (check == true)
 		{
-			selectData( table_name, where_command, order_command, field_name);
+			selectData(database,table_name, where_command, order_command, field_name);
 		}
 		else
 		{
@@ -206,8 +205,7 @@ int deal_with_command(char cmd[], int & length,int & flag ,string & database)
 		check = deal_insert_data(command, length, table_name, my_data);
 		if (check == true)
 		{
-			insertData(table_name, my_data);
-			cout << "插入成功" << endl;
+			insertData(database,table_name, my_data);
 		}
 		else
 		{
@@ -223,7 +221,7 @@ int deal_with_command(char cmd[], int & length,int & flag ,string & database)
 		bool check = false;
 		check = deal_cancel_data(command, length, table_name, field_name);
 		if (check == true)
-			CancelField( table_name, field_name);
+			CancelField(database,table_name, field_name);
 		else
 		{
 			printf("cancel failed!\n");
@@ -238,8 +236,7 @@ int deal_with_command(char cmd[], int & length,int & flag ,string & database)
 		bool check = deal_delete_data(command, length, table_name, where_command);
 		if (check == true)
 		{
-			deleteData( table_name, where_command);
-			cout << "删除成功" << endl;
+			deleteData(database,table_name, where_command);
 		}
 		else
 		{
@@ -255,8 +252,7 @@ int deal_with_command(char cmd[], int & length,int & flag ,string & database)
 		bool check = deal_add_data(command, length, table_name, my_field);
 		if (check == true)
 		{
-			addField( table_name, my_field);
-			cout << "添加成功" << endl;
+			addField(database,table_name, my_field);
 		}
 		else
 		{
@@ -275,7 +271,7 @@ int deal_with_command(char cmd[], int & length,int & flag ,string & database)
 		check = deal_update_data(command, length, table_name, new_update_data, where_command);
 		if (check == true)
 		{
-			updateData(table_name, new_update_data, where_command);
+			updateData(database,table_name, new_update_data, where_command);
 		}
 		else
 		{
@@ -289,7 +285,7 @@ int deal_with_command(char cmd[], int & length,int & flag ,string & database)
 		check = deal_open_data(command, length, database);
 		if (check == true)
 		{
-			//open a database ...
+			openDataBase(database);
 			flag = 1;
 		}
 		else
@@ -310,7 +306,7 @@ int deal_with_command(char cmd[], int & length,int & flag ,string & database)
 }
 
 
-int check_data_type(string name)//ÅÐ¶Ï×Ö¶ÎÊý¾ÝÀàÐÍ
+int check_data_type(string name)//脜脨露脧脳脰露脦脢媒戮脻脌脿脨脥
 {
 	if (strcmp(name.c_str(), "STRING") == 0)
 		return 0;
@@ -323,7 +319,7 @@ int check_data_type(string name)//ÅÐ¶Ï×Ö¶ÎÊý¾ÝÀàÐÍ
 	return -1;
 }
 
-int check_constraint(string name)	//ÅÐ¶ÏÔ¼ÊøÌõ¼þ
+int check_constraint(string name)	//脜脨露脧脭录脢酶脤玫录镁
 {
 	if (name[0] == '1' && name[0] == '0')
 		return 10;
@@ -348,7 +344,7 @@ bool judgeMark(string mark)
 	else
 		return false;
 }
-bool deal_where(const char command[])//´¦ÀíwhereÓï¾ä²»·ûºÏ¸ñÊ½ 
+bool deal_where(const char command[])//处理where语句不符合格式 
 {
 	int commandLen = strlen(command);
 	int first, last, commandNum;
@@ -406,7 +402,7 @@ bool deal_where(const char command[])//´¦ÀíwhereÓï¾ä²»·ûºÏ¸ñÊ½
 			while ((command[last] == ' ' || command[last] == ')') && last<commandLen)
 				last++;
 			if (last >= commandLen)
-				return false;
+				return true;
 			while (last < commandLen&&command[last] != ' ')
 				content.mark += command[last++];
 			if (last >= commandLen)
@@ -428,7 +424,5 @@ bool deal_where(const char command[])//´¦ÀíwhereÓï¾ä²»·ûºÏ¸ñÊ½
 	}
 	return judgeJudge(content.judge) && !content.mark.length();
 }
-
-
 
 

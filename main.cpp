@@ -8,11 +8,11 @@
 #include "Chk_Table_Cmd.h"
 #include "Command.h"
 int name_length = 20;
-table openTable(string tableName)//打开磁盘中的表
+table openTable(string databaseName,string tableName)//打开磁盘中的表
 {
 	table answerTable;
 	answerTable.name = tableName;
-	string tempStr = tableName + ".wow";
+	string tempStr = databaseName + "/" + tableName + ".wow";
 	FILE *file = fopen(tempStr.c_str(), "r");
 	char temp[26000];
 	while (fscanf(file, "%s", temp) != EOF)
@@ -145,9 +145,9 @@ table openTable(string tableName)//打开磁盘中的表
 	fclose(file);
 	return answerTable;
 }
-void saveTable(table _theSavingTable)//保存磁盘中的表
+void saveTable(string databaseName,table _theSavingTable)//保存磁盘中的表
 {
-	string tempStr = _theSavingTable.name + ".wow";
+	string tempStr = databaseName+"/"+_theSavingTable.name + ".wow";
 	FILE *file = fopen(tempStr.c_str(), "w");
 	fprintf(file, "field:%d####\n", _theSavingTable.field.size());
 	for each (fieldType var in _theSavingTable.field)
