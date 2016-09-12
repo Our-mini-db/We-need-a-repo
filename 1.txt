@@ -1,0 +1,4 @@
+命令格式:create database 数据库名称;
+命令用例:create database persons;
+命令解释:创建一个名字是persons的数据库；
+相关提示:每次只创建一个数据库。

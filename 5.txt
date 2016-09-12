@@ -1,0 +1,4 @@
+命令格式:SELECT 	table 字段1 字段2 字段3 where 条件 ORDER  字段1 ASC(DESC) 字段2 ASC(DESC) [TOP N]//
+命令示例:SELECT 学生 年龄 性别 where 成绩>“90”  top 5 ORDER BY 成绩 ASC 年龄 DESC;
+命令解释:在名字为 学生 的表单中选择成绩大于90的记录并且按照优先级为成绩 年龄进行排序,成绩为升序排列,年龄为降序排列，展示前5条记录的年龄 性别内容;
+相关提示:where语句中AND OR 以及ASC DESC为敏感字符，where语句允许AND OR 混用，如果不输入字段名称默认全部字段展示，如果不输入TOP n全部搜索到的记录被展示。
